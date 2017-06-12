@@ -12,6 +12,6 @@ private:
 
 public:
 	EarleyItem(Rule* rule_ptr, int position, int item_start);
-	
+	void print_item();
 };
 
