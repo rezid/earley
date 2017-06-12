@@ -19,6 +19,20 @@ void Rule::print_rule()
 	cout << endl;
 }
 
+void Rule::print_early_rule(int position, int item_start)
+{
+	cout << main_symbole << " : ";
+
+	int i = 0;
+	for (auto s : body) {
+		if (i == position)
+			cout << ".";
+		cout << s << " ";
+		++i;
+	}
+	cout << "(" << item_start << ")" << endl;
+}
+
 std::string Rule::get_main_symbole()
 {
 	return main_symbole;
