@@ -13,5 +13,7 @@ public:
 	Grammar();
 	void add_rule(std::string main_symbole, std::list<std::string> body);
 	void add_terminal_symbole(std::string name);
+	void print_terminal_symboles();
+	void print_all_rules();
 };
 
