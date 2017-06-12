@@ -7,7 +7,12 @@ Grammar::Grammar()
 {
 }
 
-void Grammar::add_a_rule(string main_symbole, list<string> body)
+void Grammar::add_terminal_symbole(std::string name)
+{
+	terminals.push_back(name);
+}
+
+void Grammar::add_rule(string main_symbole, list<string> body)
 {
 	// search if a rule exist with the main symbole
 	for (Rule r : rules) {
