@@ -2,6 +2,9 @@
 #include <iostream>
 #include <fstream>
 #include<string>
+#include <regex>
+#include "Grammar.h"
+#include<sstream>
 
 using namespace std;
 
@@ -14,8 +17,15 @@ ifstream grammar_file, string_file;
 
 int main(int argc, char* argv[])
 {
-	if (!parse_commande_line_arguments(argc, argv))
+	if (!parse_commande_line_arguments(argc, argv)) {
 		cout << last_error << endl;
+		return 0;
+	}
+
+	if (!parse_grammar_file()) {
+		cout << last_error << endl;
+		return 0;
+	}
 
 
 	// Closing the files
@@ -53,5 +63,56 @@ bool parse_commande_line_arguments(int argc, char* argv[])
 		last_error = "parse_commande_line_arguments : can't open ast_file";
 		return false;
 	}
+	return true;
+}
+
+bool parse_grammar_file()
+{
+	Grammar grammar;
+
+	string line;
+	regex token{ "^%token (.+)" };
+	std::smatch m;
+
+	getline(grammar_file, line);
+	regex_match(line, m, token);
+
+	// Test if error in %token
+	if (m[0] == "") {
+		last_error = "parse_grammar_file : %token format error or not found";
+		return false;
+	}
+
+	// Split the match
+	string buf; 
+	stringstream ss(m[1]);
+	while (ss >> buf)
+		grammar.add_terminal_symbole(buf);
+
+
+	// FOR DEBUG ONLY : comment it after work finish
+	grammar.print_terminal_symboles();
+
+	// Parse the rules
+	regex rule{ "^(\\S+) : (.+)" };
+	while (getline(grammar_file, line))
+	{
+		regex_match(line, m, rule);
+
+		// Split the match
+		string buf;
+		stringstream ss(m[2]);
+		list<string> l;
+		while (ss >> buf)
+			l.push_back(buf);
+
+		// add the rule to grammar
+		grammar.add_rule(m[1], l);
+		
+	}
+	
+	// FOR DEBUG ONLY : comment it after work finish
+	grammar.print_all_rules();
+
 	return true;
 }
