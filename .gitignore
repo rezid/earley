@@ -1,0 +1,5 @@
+*Release*
+*.vs/
+rapport/*.aux
+rapport/*.log
+rapport/*.gz
