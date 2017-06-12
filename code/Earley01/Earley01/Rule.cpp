@@ -3,26 +3,20 @@
 
 using namespace std;
 
-Rule::Rule(string main_symbole)
+Rule::Rule(string main_symbole, std::list<std::string> body)
 {
 	this->main_symbole = main_symbole;
-}
-
-void Rule::add_a_body(list<string> body)
-{
-	bodies.push_back(body);
+	this->body = body;
 }
 
 void Rule::print_rule()
 {
-	for (list<string> l : bodies) {
-		cout << main_symbole << " : ";
+	cout << main_symbole << " : ";
 
-		for (string s : l)
-			cout << s << " ";
+	for (string s : body)
+		cout << s << " ";
 
-		cout << endl;
-	}
+	cout << endl;
 }
 
 std::string Rule::get_main_symbole()
