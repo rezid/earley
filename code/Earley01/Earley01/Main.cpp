@@ -14,6 +14,7 @@ bool parse_grammar_file();
 string last_error;
 ofstream ast_file;
 ifstream grammar_file, string_file;
+Grammar grammar;
 
 int main(int argc, char* argv[])
 {
@@ -68,7 +69,7 @@ bool parse_commande_line_arguments(int argc, char* argv[])
 
 bool parse_grammar_file()
 {
-	Grammar grammar;
+	
 
 	string line;
 	regex token{ "^%token (.+)" };
