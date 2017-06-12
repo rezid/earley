@@ -3,9 +3,9 @@
 
 using namespace std;
 
-Rule::Rule(string start)
+Rule::Rule(string main_symbole)
 {
-	this->start = start;
+	this->main_symbole = main_symbole;
 }
 
 void Rule::add_a_body(list<string> body)
@@ -16,13 +16,18 @@ void Rule::add_a_body(list<string> body)
 void Rule::print_rule()
 {
 	for (list<string> l : bodies) {
-		cout << start << " : ";
+		cout << main_symbole << " : ";
 
 		for (string s : l)
 			cout << s << " ";
 
 		cout << endl;
 	}
+}
+
+std::string Rule::get_main_symbole()
+{
+	return main_symbole;
 }
 
 
