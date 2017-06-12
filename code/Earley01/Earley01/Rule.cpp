@@ -3,7 +3,7 @@
 
 using namespace std;
 
-Rule::Rule(string main_symbole, std::list<std::string> body)
+Rule::Rule(string main_symbole, std::vector<std::string> body)
 {
 	this->main_symbole = main_symbole;
 	this->body = body;
@@ -19,7 +19,7 @@ void Rule::print_rule()
 	cout << endl;
 }
 
-void Rule::print_early_rule(int position, int item_start)
+void Rule::print_Earley_rule(int position, int item_start)
 {
 	cout << main_symbole << " : ";
 
@@ -33,9 +33,17 @@ void Rule::print_early_rule(int position, int item_start)
 	cout << "(" << item_start << ")" << endl;
 }
 
-std::string Rule::get_main_symbole()
+string Rule::get_main_symbole()
 {
 	return main_symbole;
+}
+
+string Rule::get_symbole(int symbole_offset)
+{
+	if (symbole_offset == body.size())
+		return "";
+
+	return body[symbole_offset];
 }
 
 

@@ -10,6 +10,7 @@ using namespace std;
 
 bool parse_commande_line_arguments(int argc, char* argv[]);
 bool parse_grammar_file();
+bool create_earley_table();
 
 string last_error;
 ofstream ast_file;
@@ -24,6 +25,11 @@ int main(int argc, char* argv[])
 	}
 
 	if (!parse_grammar_file()) {
+		cout << last_error << endl;
+		return 0;
+	}
+
+	if (!create_earley_table()) {
 		cout << last_error << endl;
 		return 0;
 	}
@@ -69,8 +75,6 @@ bool parse_commande_line_arguments(int argc, char* argv[])
 
 bool parse_grammar_file()
 {
-	
-
 	string line;
 	regex token{ "^%token (.+)" };
 	std::smatch m;
@@ -103,7 +107,7 @@ bool parse_grammar_file()
 		// Split the match
 		string buf;
 		stringstream ss(m[2]);
-		list<string> l;
+		vector<string> l;
 		while (ss >> buf)
 			l.push_back(buf);
 
@@ -114,6 +118,20 @@ bool parse_grammar_file()
 	
 	// FOR DEBUG ONLY : comment it after work finish
 	grammar.print_all_rules();
+
+	return true;
+}
+
+bool create_earley_table()
+{
+	// Read all the string file in a buffer
+	string buffer, line;
+	while (getline(string_file, line))
+		buffer += line;
+
+	// Parse the buffer and create an earley table
+	EarleyTable table = grammar.parse_string(buffer);
+	table.print_table();
 
 	return true;
 }

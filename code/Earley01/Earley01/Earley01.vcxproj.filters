@@ -27,7 +27,10 @@
     <ClCompile Include="EarleyItem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="EarlyTable.cpp">
+    <ClCompile Include="EarleySet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EarleyTable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -41,7 +44,10 @@
     <ClInclude Include="EarleyItem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EarlyTable.h">
+    <ClInclude Include="EarleySet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EarleyTable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
