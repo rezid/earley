@@ -4,7 +4,11 @@
 
 using namespace std;
 
-Grammar::Grammar(string start_symbole)
+Grammar::Grammar()
+{
+}
+
+void Grammar::set_start_symbole(std::string start_symbole)
 {
 	this->start_symbole = start_symbole;
 }
@@ -104,6 +108,10 @@ void Grammar::complete(EarleySet & curent_set, EarleySet & old_set, string start
 
 void Grammar::add_rule(string main_symbole, vector<string> body)
 {
+	// if first rule in grammar, set the start symbole to be main_symbole
+	if (rules.size() == 0)
+		set_start_symbole(main_symbole);
+
 	// Create a new rule and add it to the grammar
 	Rule new_rule{ main_symbole, body };
 	rules.push_back(new_rule);

@@ -13,7 +13,8 @@ private:
 	std::vector<Rule> rules;
 
 public:
-	Grammar(std::string start_symbole);
+	Grammar();
+	void set_start_symbole(std::string start_symbole);
 	void add_rule(std::string main_symbole, std::vector<std::string> body);
 	void add_terminal_symbole(std::string name);
 	void print_terminal_symboles();

@@ -15,7 +15,7 @@ bool create_earley_table();
 string last_error;
 ofstream ast_file;
 ifstream grammar_file, string_file;
-Grammar grammar("S");
+Grammar grammar;
 
 int main(int argc, char* argv[])
 {
