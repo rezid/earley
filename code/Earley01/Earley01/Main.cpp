@@ -91,7 +91,7 @@ bool parse_grammar_file()
 		v.push_back("");
 		for (int i = 0; i < buf.size(); ++i) {
 			char c = buf[i];
-			if (c == ':' || c == ';') {
+			if (c == ':' || c == ';' || c == '|') {
 				if (i != 0)
 					v.push_back("");
 				v.back() += c;
@@ -109,13 +109,14 @@ bool parse_grammar_file()
 	if (v.size() == 0)
 		v.push_back("");
 	
-	int selector = 0; // 0 : start_symbole,		1 : ':',		 2 : body,		 3 : ';'
+	int selector = 0; // 0 : start_symbole,		1 : ':',		 2 : body,		 3 : '|'	4 : ';'
 	Rule rule;
+	int status;
 	for (int i = 0; i < v.size(); ++i) {
 		switch (selector)
 		{
 		case 0:
-			if (v[i] == ":" || v[i] == ";") {
+			if (v[i] == ":" || v[i] == ";" || v[i] == "|") {
 				last_error = "parse_grammar_file : Format File Error (0001)";
 				return false;
 			}
@@ -137,19 +138,42 @@ bool parse_grammar_file()
 				last_error = "parse_grammar_file : Format File Error (0004)";
 				return false;
 			}
-			if (rule.push_back_symbole_to_body(v[i]))
+			
+		
+			// return 0 : nullable symbole terminal
+			// return 1 : encounter'|' with empty body
+			// return 2 : normale case
+			status = rule.push_back_symbole_to_body(v[i]);
+			if (status == 0)
 				grammar.add_nullable_symbole_if_not_present(rule.get_main_symbole());
+			else if (status == 1) {
+				last_error = "parse_grammar_file : Format File Error (0005)";
+				return false;
+			}
 				
-			if (v[i] == ";") {
+			if (v[i] == "|") {
 				i--;
 				selector = 3;
 			}
+			else if (v[i] == ";") {
+				i--;
+				selector = 4;
+			}
 			break;
 		case 3:
+			// we know a this point that v[i] = "|"
+			selector = 2;
+			// add the rule to grammar
+			grammar.add_rule_if_not_present(rule);
+			// clear only body variable
+			rule.clear_body();
+			break;
+		case 4:
 			// we know a this point that v[i] = ";"
 			selector = 0;
 			// add the rule to grammar
 			grammar.add_rule_if_not_present(rule);
+			// clear rule variable
 			rule.clear_rule();
 			break;
 		default:

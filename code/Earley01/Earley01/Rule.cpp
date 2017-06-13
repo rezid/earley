@@ -77,16 +77,23 @@ std::vector<std::string> Rule::get_body()
 	return body;
 }
 
-bool Rule::push_back_symbole_to_body(std::string symbole)
+int Rule::push_back_symbole_to_body(std::string symbole)
 {
-	// return true means : symbole nullable
-	if (symbole == ";" && body.size() == 0)
-		return true;
+	// return 0 : nullable symbole terminal
+	// return 1 : encounter'|' with empty body
+	// return 2 : normale case
 
-	if (symbole != ";")
+	
+	if (symbole == ";" && body.size() == 0)
+		return 0;
+
+	if (symbole == "|" && body.size() == 0)
+		return 1;
+
+	if (symbole != ";" && symbole != "|")
 		body.push_back(symbole);
 
-	return false;
+	return 2;
 }
 
 void Rule::clear_rule()
@@ -94,6 +101,11 @@ void Rule::clear_rule()
 	main_symbole.clear();
 	body.clear();
 	main_symbole_is_set = false;
+}
+
+void Rule::clear_body()
+{
+	body.clear();
 }
 
 bool Rule::operator==(const Rule& rule) const
