@@ -66,7 +66,7 @@ EarleyTable Grammar::parse_string(std::vector<std::string> symboles_input)
 				complete(table.get_set(i), table.get_set(old_set_indice), start_symbole);  // Complétion
 			}
 			else if (is_terminal(next_symbole) && i != table.size() - 1) scan(symboles_input[i], next_symbole, table.get_set(i + 1), table.get_set(i).get_item(j)); // Lecture
-			else predict(table.get_set(i), i, next_symbole); // Prediction
+			else predict(table.get_set(i), i, next_symbole, table.get_set(i).get_item(j)); // Prediction
 		}
 
 	// return the earley table
@@ -82,13 +82,20 @@ bool Grammar::is_terminal(std::string symbole)
 	return false;
 }
 
-void Grammar::predict(EarleySet& set, int set_indice, string symbole)
+void Grammar::predict(EarleySet& set, int set_indice, string symbole, EarleyItem& current_item)
 {
 	// access by reference to the set
 	for (Rule& r : rules)
 		if (r.get_main_symbole() == symbole) {
 			EarleyItem item{ &r, 0, set_indice };
 			set.add_item_if_not_present(item);
+
+			// magical completition for nullable symbole
+			if (is_nullable(symbole)) {
+				EarleyItem item = current_item.next_item();
+				set.add_item_if_not_present(item);
+			}
+
 		}	
 }
 
@@ -165,3 +172,4 @@ void Grammar::add_rule_if_not_present(Rule rule)
 	
 	rules.push_back(rule);
 }
+
