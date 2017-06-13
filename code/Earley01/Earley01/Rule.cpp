@@ -72,15 +72,21 @@ void Rule::set_body(std::vector<std::string> body)
 	this->body = body;
 }
 
+std::vector<std::string> Rule::get_body()
+{
+	return body;
+}
+
 bool Rule::push_back_symbole_to_body(std::string symbole)
 {
+	// return true means : symbole nullable
 	if (symbole == ";" && body.size() == 0)
-		return false;
+		return true;
 
 	if (symbole != ";")
 		body.push_back(symbole);
 
-	return true;
+	return false;
 }
 
 void Rule::clear_rule()

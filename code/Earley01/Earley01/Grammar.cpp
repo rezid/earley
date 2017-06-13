@@ -113,6 +113,45 @@ void Grammar::complete(EarleySet & curent_set, EarleySet & old_set, string start
 
 }
 
+void Grammar::add_nullable_symbole_if_not_present(std::string symbole)
+{
+	for (auto s : nullable_symboles)
+		if (s == symbole)
+			return;
+
+	nullable_symboles.push_back(symbole);
+}
+
+void Grammar::get_all_nullable_symboles()
+{
+	for (int i = 0; i < rules.size(); ++i)
+		for (auto rule : rules) {
+			if (is_nullable(rule.get_main_symbole()))
+				continue;
+			for (string s : rule.get_body())
+				if (!is_nullable(s))
+					continue;
+			add_nullable_symbole_if_not_present(rule.get_main_symbole());
+		}
+}
+
+bool Grammar::is_nullable(std::string symbole)
+{
+	for (auto s : nullable_symboles)
+		if (s == symbole)
+			return true;
+
+	return false;
+}
+
+void Grammar::print_nullable_symboles()
+{
+	cout << "\nThe nullable symboles are: ";
+	for (auto s : nullable_symboles)
+		cout << s << " ";
+	cout << "\n" << endl;
+}
+
 void Grammar::add_rule_if_not_present(Rule rule)
 {
 	// If first rule in grammar, set the start symbole to be main_symbole

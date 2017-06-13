@@ -105,6 +105,9 @@ bool parse_grammar_file()
 	// remove empty string from vector
 	v.erase(std::remove(v.begin(), v.end(), ""), v.end());
 
+	// if v is empty then we want to parse the empty string
+	if (v.size() == 0)
+		v.push_back("");
 	
 	int selector = 0; // 0 : start_symbole,		1 : ':',		 2 : body,		 3 : ';'
 	Rule rule;
@@ -134,10 +137,9 @@ bool parse_grammar_file()
 				last_error = "parse_grammar_file : Format File Error (0004)";
 				return false;
 			}
-			if (!rule.push_back_symbole_to_body(v[i])) {
-				last_error = "parse_grammar_file : Format File Error (0005)";
-				return false;
-			}
+			if (rule.push_back_symbole_to_body(v[i]))
+				grammar.add_nullable_symbole_if_not_present(rule.get_main_symbole());
+				
 			if (v[i] == ";") {
 				i--;
 				selector = 3;
@@ -156,6 +158,12 @@ bool parse_grammar_file()
 			break;
 		}
 	}
+
+	// Complete the nullable symbole list
+	grammar.get_all_nullable_symboles();
+
+	// FOR DEBUG ONLY : comment it after work finish
+	grammar.print_nullable_symboles();
 
 	// FOR DEBUG ONLY : comment it after work finish
 	grammar.print_all_rules();

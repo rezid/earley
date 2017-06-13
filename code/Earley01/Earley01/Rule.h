@@ -19,6 +19,7 @@ public:
 	std::string get_symbole(int symbole_offset);
 	bool set_main_symbole(std::string main_symbole);
 	void set_body(std::vector<std::string> body);
+	std::vector<std::string> get_body();
 	bool push_back_symbole_to_body(std::string symbole);
 	void clear_rule();
 	bool operator== (const Rule& rule) const;
