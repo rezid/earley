@@ -20,7 +20,7 @@ public:
 	void print_terminal_symboles();
 	void print_all_rules();
 
-	EarleyTable parse_string(std::string s);
+	EarleyTable parse_string(std::vector<std::string> symboles_input);
 	bool is_terminal(std::string symbole);
 	void predict(EarleySet& item_set, int set_indice, std::string symbole);
 	void scan(std::string input, std::string symbole, EarleySet& next_item_set, EarleyItem item);

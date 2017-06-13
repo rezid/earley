@@ -5,6 +5,7 @@
 #include <regex>
 #include "Grammar.h"
 #include<sstream>
+#include<vector>
 
 using namespace std;
 
@@ -16,9 +17,11 @@ string last_error;
 ofstream ast_file;
 ifstream grammar_file, string_file;
 Grammar grammar;
+vector<string> input;
 
 int main(int argc, char* argv[])
 {
+	
 	if (!parse_commande_line_arguments(argc, argv)) {
 		cout << last_error << endl;
 		return 0;
@@ -96,7 +99,7 @@ bool parse_grammar_file()
 
 
 	// FOR DEBUG ONLY : comment it after work finish
-	//grammar.print_terminal_symboles();
+	grammar.print_terminal_symboles();
 
 	// Parse the rules
 	regex rule{ "^(\\S+) : (.+)" };
@@ -117,20 +120,27 @@ bool parse_grammar_file()
 	}
 	
 	// FOR DEBUG ONLY : comment it after work finish
-	//grammar.print_all_rules();
+	grammar.print_all_rules();
 
 	return true;
 }
 
 bool create_earley_table()
 {
-	// Read all the string file in a buffer
+	// Read the file in a buffer
 	string buffer, line;
 	while (getline(string_file, line))
-		buffer += line;
+		buffer += " " + line;
+
+	// Split the symboles of the buffer
+	string buf;
+	stringstream ss(buffer);
+	vector<string> v;
+	while (ss >> buf)
+		v.push_back(buf);
 
 	// Parse the buffer and create an earley table
-	EarleyTable table = grammar.parse_string(buffer);
+	EarleyTable table = grammar.parse_string(v);
 
 	// FOR DEBUG ONLY : comment it after work finish
 	table.print_table();
