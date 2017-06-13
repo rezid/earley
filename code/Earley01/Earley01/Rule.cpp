@@ -24,12 +24,18 @@ void Rule::print_Earley_rule(int position, int item_start)
 	cout << main_symbole << " : ";
 
 	int i = 0;
+	bool dot_insered = false;
 	for (auto s : body) {
-		if (i == position)
+		if (i == position) {
 			cout << ".";
+			dot_insered = true;
+		}
 		cout << s << " ";
 		++i;
 	}
+
+	if (!dot_insered)
+		cout << ". ";
 	cout << "(" << item_start << ")" << endl;
 }
 

@@ -4,8 +4,9 @@
 
 using namespace std;
 
-Grammar::Grammar()
+Grammar::Grammar(string start_symbole)
 {
+	this->start_symbole = start_symbole;
 }
 
 void Grammar::add_terminal_symbole(std::string name)
@@ -32,6 +33,7 @@ void Grammar::print_all_rules()
 
 EarleyTable Grammar::parse_string(string s)
 {
+	
 	// Create an empty table
 	EarleyTable table{ static_cast<int>(s.size()) };
 
@@ -52,8 +54,8 @@ EarleyTable Grammar::parse_string(string s)
 				string start_symbole = table.get_set(i).get_item(j).get_rule()->get_main_symbole();
 				complete(table.get_set(i), table.get_set(old_set_indice), start_symbole);  // Complétion
 			}
-			else if (is_terminal(next_symbole)) predict(table.get_set(i), i, next_symbole); // Prediction
-			else scan(s, next_symbole, table.get_set(i + 1), table.get_set(i).get_item(j)); // Lecture
+			else if (is_terminal(next_symbole)) scan(string{ s[i] }, next_symbole, table.get_set(i + 1), table.get_set(i).get_item(j)); // Lecture
+			else predict(table.get_set(i), i, next_symbole); // Prediction
 		}
 
 	// return the earley table

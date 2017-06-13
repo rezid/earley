@@ -15,7 +15,7 @@ bool create_earley_table();
 string last_error;
 ofstream ast_file;
 ifstream grammar_file, string_file;
-Grammar grammar;
+Grammar grammar("S");
 
 int main(int argc, char* argv[])
 {
@@ -96,7 +96,7 @@ bool parse_grammar_file()
 
 
 	// FOR DEBUG ONLY : comment it after work finish
-	grammar.print_terminal_symboles();
+	//grammar.print_terminal_symboles();
 
 	// Parse the rules
 	regex rule{ "^(\\S+) : (.+)" };
@@ -117,7 +117,7 @@ bool parse_grammar_file()
 	}
 	
 	// FOR DEBUG ONLY : comment it after work finish
-	grammar.print_all_rules();
+	//grammar.print_all_rules();
 
 	return true;
 }
@@ -131,6 +131,8 @@ bool create_earley_table()
 
 	// Parse the buffer and create an earley table
 	EarleyTable table = grammar.parse_string(buffer);
+
+	// FOR DEBUG ONLY : comment it after work finish
 	table.print_table();
 
 	return true;
