@@ -48,8 +48,6 @@ EarleyTable Grammar::parse_string(std::vector<std::string> symboles_input)
 		}
 	}
 
-	cout << "$" << symboles_input.size() << endl;
-
 	// Populate the reste of E(i)
 	for (int i = 0; i < table.size(); ++i)
 		for (int j = 0; j < table.get_set(i).size(); ++j) {
@@ -107,13 +105,16 @@ void Grammar::complete(EarleySet & curent_set, EarleySet & old_set, string start
 
 }
 
-void Grammar::add_rule(string main_symbole, vector<string> body)
+void Grammar::add_rule_if_not_present(Rule rule)
 {
-	// if first rule in grammar, set the start symbole to be main_symbole
+	// If first rule in grammar, set the start symbole to be main_symbole
 	if (rules.size() == 0)
-		set_start_symbole(main_symbole);
+		set_start_symbole(rule.get_main_symbole());
 
-	// Create a new rule and add it to the grammar
-	Rule new_rule{ main_symbole, body };
-	rules.push_back(new_rule);
+	// Test if a same rule already exist in grammar, if not add it to the grammar
+	for (Rule r : rules)
+		if (r == rule)
+			return;
+	
+	rules.push_back(rule);
 }

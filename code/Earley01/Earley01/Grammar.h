@@ -15,11 +15,10 @@ private:
 public:
 	Grammar();
 	void set_start_symbole(std::string start_symbole);
-	void add_rule(std::string main_symbole, std::vector<std::string> body);
+	void add_rule_if_not_present(Rule rule);
 	void add_terminal_symbole(std::string name);
 	void print_terminal_symboles();
 	void print_all_rules();
-
 	EarleyTable parse_string(std::vector<std::string> symboles_input);
 	bool is_terminal(std::string symbole);
 	void predict(EarleySet& item_set, int set_indice, std::string symbole);

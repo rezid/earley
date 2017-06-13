@@ -3,10 +3,16 @@
 
 using namespace std;
 
+Rule::Rule()
+{
+	main_symbole_is_set = false;
+}
+
 Rule::Rule(string main_symbole, std::vector<std::string> body)
 {
 	this->main_symbole = main_symbole;
 	this->body = body;
+	main_symbole_is_set = true;
 }
 
 void Rule::print_rule()
@@ -50,6 +56,43 @@ string Rule::get_symbole(int symbole_offset)
 		return "";
 
 	return body[symbole_offset];
+}
+
+bool Rule::set_main_symbole(std::string main_symbole)
+{
+	if (main_symbole_is_set)
+		return false;
+
+	this->main_symbole = main_symbole;
+	return true;
+}
+
+void Rule::set_body(std::vector<std::string> body)
+{
+	this->body = body;
+}
+
+bool Rule::push_back_symbole_to_body(std::string symbole)
+{
+	if (symbole == ";" && body.size() == 0)
+		return false;
+	body.push_back(symbole);
+	return true;
+}
+
+void Rule::clear_rule()
+{
+	main_symbole.clear();
+	body.clear();
+	main_symbole_is_set = false;
+}
+
+bool Rule::operator==(const Rule& rule) const
+{
+	if (main_symbole == rule.main_symbole && body == rule.body)
+		return true;
+
+	return false;
 }
 
 

@@ -78,50 +78,87 @@ bool parse_commande_line_arguments(int argc, char* argv[])
 
 bool parse_grammar_file()
 {
-	string line;
-	regex token{ "^%token (.+)" };
-	std::smatch m;
-
-	getline(grammar_file, line);
-	regex_match(line, m, token);
-
-	// Test if error in %token
-	if (m[0] == "") {
-		last_error = "parse_grammar_file : %token format error or not found";
-		return false;
-	}
-
-	// Split the match
-	string buf; 
-	stringstream ss(m[1]);
-	while (ss >> buf)
-		grammar.add_terminal_symbole(buf);
-
-
-	// FOR DEBUG ONLY : comment it after work finish
-	grammar.print_terminal_symboles();
-
-	// Parse the rules
-	regex rule{ "^(\\S+) : (.+)" };
+	// Read the grammar file in a buffer
+	string buffer, line;
 	while (getline(grammar_file, line))
-	{
-		regex_match(line, m, rule);
+		buffer += " " + line;
 
-		// Split the match
-		string buf;
-		stringstream ss(m[2]);
-		vector<string> l;
-		while (ss >> buf)
-			l.push_back(buf);
-
-		// add the rule to grammar
-		grammar.add_rule(m[1], l);
-		
+	// Split the symboles of the buffer
+	string buf;
+	stringstream ss(buffer);
+	vector<string> v;
+	while (ss >> buf) {
+		v.push_back("");
+		for (int i = 0; i < buf.size(); ++i) {
+			char c = buf[i];
+			if (c == ':' || c == ';') {
+				if (i != 0)
+					v.push_back("");
+				v.back() += c;
+				v.push_back("");
+			}
+			else
+				v.back() += c;
+		}
 	}
+
+	// remove empty string from vector
+	v.erase(std::remove(v.begin(), v.end(), ""), v.end());
+
 	
+	int selector = 0; // 0 : start_symbole,		1 : ':',		 2 : body,		 3 : ';'
+	Rule rule;
+	for (int i = 0; i < v.size(); ++i) {
+		switch (selector)
+		{
+		case 0:
+			if (v[i] == ":" || v[i] == ";") {
+				last_error = "parse_grammar_file : Format File Error (0001)";
+				return false;
+			}
+			if (!rule.set_main_symbole(v[0])) {
+				last_error = "parse_grammar_file : Format File Error (0002)";
+				return false;
+			}
+			selector = 1;
+			break;
+		case 1:
+			if (v[i] != ":") {
+				last_error = "parse_grammar_file : Format File Error (0003)";
+				return false;
+			}
+			selector = 2;
+			break;
+		case 2:
+			if (v[i] == ":") {
+				last_error = "parse_grammar_file : Format File Error (0004)";
+				return false;
+			}
+			if (!rule.push_back_symbole_to_body(v[i])) {
+				last_error = "parse_grammar_file : Format File Error (0005)";
+				return false;
+			}
+			if (v[i] == ";") {
+				i--;
+				selector = 3;
+			}
+			break;
+		case 3:
+			// we know a this point that v[i] = ";"
+			selector = 0;
+			// add the rule to grammar
+			grammar.add_rule_if_not_present(rule);
+			rule.clear_rule();
+			break;
+		default:
+			last_error = "parse_grammar_file : Can't happen !";
+			return false;
+			break;
+		}
+	}
+
 	// FOR DEBUG ONLY : comment it after work finish
 	grammar.print_all_rules();
-
 	return true;
 }
 
@@ -141,6 +178,9 @@ bool create_earley_table()
 
 	// Parse the buffer and create an earley table
 	EarleyTable table = grammar.parse_string(v);
+
+	// FOR DEBUG ONLY : comment it after work finish
+	grammar.print_terminal_symboles();
 
 	// FOR DEBUG ONLY : comment it after work finish
 	table.print_table();
