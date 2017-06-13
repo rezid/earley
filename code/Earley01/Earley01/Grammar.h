@@ -17,6 +17,7 @@ public:
 	void set_start_symbole(std::string start_symbole);
 	void add_rule_if_not_present(Rule rule);
 	void add_terminal_symbole(std::string name);
+	void set_terminals(std::vector<std::string> terminals);
 	void print_terminal_symboles();
 	void print_all_rules();
 	EarleyTable parse_string(std::vector<std::string> symboles_input);

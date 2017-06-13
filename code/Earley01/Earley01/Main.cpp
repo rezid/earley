@@ -116,7 +116,7 @@ bool parse_grammar_file()
 				last_error = "parse_grammar_file : Format File Error (0001)";
 				return false;
 			}
-			if (!rule.set_main_symbole(v[0])) {
+			if (!rule.set_main_symbole(v[i])) {
 				last_error = "parse_grammar_file : Format File Error (0002)";
 				return false;
 			}

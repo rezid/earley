@@ -18,6 +18,11 @@ void Grammar::add_terminal_symbole(std::string name)
 	terminals.push_back(name);
 }
 
+void Grammar::set_terminals(std::vector<std::string> terminals)
+{
+	this->terminals = terminals;
+}
+
 void Grammar::print_terminal_symboles()
 {
 	cout << "\nThe "<< terminals.size() <<" terminal symboles are: ";
@@ -37,6 +42,9 @@ void Grammar::print_all_rules()
 
 EarleyTable Grammar::parse_string(std::vector<std::string> symboles_input)
 {
+	// Create the terminal symboles from the input symboles
+	set_terminals(symboles_input);
+
 	// Create an empty table
 	EarleyTable table{ static_cast<int>(symboles_input.size()) };
 

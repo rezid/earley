@@ -76,7 +76,10 @@ bool Rule::push_back_symbole_to_body(std::string symbole)
 {
 	if (symbole == ";" && body.size() == 0)
 		return false;
-	body.push_back(symbole);
+
+	if (symbole != ";")
+		body.push_back(symbole);
+
 	return true;
 }
 
