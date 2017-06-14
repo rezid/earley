@@ -39,6 +39,11 @@ int EarleyItem::get_item_start()
 	return item_start;
 }
 
+int EarleyItem::get_position()
+{
+	return position;
+}
+
 Rule * EarleyItem::get_rule()
 {
 	return rule_ptr;

@@ -19,6 +19,7 @@ public:
 	bool operator== (const EarleyItem& item) const;
 	EarleyItem next_item();
 	int get_item_start();
+	int get_position();
 	Rule* get_rule();
 };
 

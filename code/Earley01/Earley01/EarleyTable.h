@@ -9,6 +9,7 @@ private:
 	std::vector<EarleySet> table;
 
 public:
+	EarleyTable();
 	EarleyTable(int input_string_size);
 	void add_item_to_set_if_not_present(int set_number, EarleyItem item);
 	void print_table();

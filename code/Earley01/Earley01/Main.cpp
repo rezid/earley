@@ -18,10 +18,10 @@ ofstream ast_file;
 ifstream grammar_file, string_file;
 Grammar grammar;
 vector<string> input;
+EarleyTable table;
 
 int main(int argc, char* argv[])
 {
-	
 	if (!parse_commande_line_arguments(argc, argv)) {
 		cout << last_error << endl;
 		return 0;
@@ -37,6 +37,11 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 
+	// Test if input string recognized or not
+	if (table.status())
+		cout << "\nSUCCESS !!!!!!!!\n" << endl;
+	else
+		cout << "\nFAIL !!!!!!!!\n" << endl;
 
 	// Closing the files
 	ast_file.close();
@@ -208,8 +213,8 @@ bool create_earley_table()
 	while (ss >> buf)
 		v.push_back(buf);
 
-	// Parse the buffer and create an earley table
-	EarleyTable table = grammar.parse_string(v);
+	// Parse the buffer and in an earley table
+	table = grammar.parse_string(v);
 
 	// FOR DEBUG ONLY : comment it after work finish
 	grammar.print_terminal_symboles();

@@ -131,14 +131,18 @@ void Grammar::add_nullable_symbole_if_not_present(std::string symbole)
 
 void Grammar::get_all_nullable_symboles()
 {
+	if (nullable_symboles.size() == 0)
+		return;
+
 	for (int i = 0; i < rules.size(); ++i)
 		for (auto rule : rules) {
 			if (is_nullable(rule.get_main_symbole()))
 				continue;
 			for (string s : rule.get_body())
 				if (!is_nullable(s))
-					continue;
+					goto end;
 			add_nullable_symbole_if_not_present(rule.get_main_symbole());
+		end:;
 		}
 }
 
