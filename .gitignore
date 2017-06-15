@@ -3,3 +3,5 @@
 rapport/*.aux
 rapport/*.log
 rapport/*.gz
+rapport/*.bbl
+rapport/*.blg

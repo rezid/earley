@@ -82,6 +82,23 @@
 \end{titlepage}
 
 \chapter{Introduction}
+Durant mon parcours d'étudiant en informatique, j'ai tout d'abord découvert les compilateurs, puis j'ai appris à les aimer, et aujourd'hui je suis amené à les construire et à les développer. Ce projet est une grande opportunité pour moi d'agrandir mes acquis et connaissances, et de comprendre les aspects théorique et logiciels tout en faisant ce à quoi j'aspire. De plus, les problèmes rencontrés durant ce travail, mon appris à faire de la recherche et à lire de la documentation et thèse.
+
+Depuis le séminaire de Donald Knuth\cite{Knuth} sur l'analyse syntaxique LR en 1960, puis les travaux de DeRemer\cite{DeRemer01, DeRemer02} pour l'extension vers LALR, nous somme capable de générer automatiquement des analyseurs syntaxiques pour une grande variété de grammaire non contextuelle. Par contre, plusieurs analyseur syntaxique sont écrit manuellement, car souvent, on a pas le luxe de concevoir une grammaire adapter a un générateur d'analyseur syntaxique. Mais aussi, c'est très claire que les concepteurs de langage informatique, n'écrivent pas naturellement des grammaire LR(1).
+
+Une grammaire, non seulement elle définit la syntaxe du langage, mais aussi, c'est le point d'entrés vers la définition de la sémantique, et souvent la grammaire qui facilite la définition de la sémantique n'ai pas LR(1). Ceci est montré pas le développement de la spécification de JAVA. La premiers édition de cette spécification\cite{Java01} montre l'effort mis dans la sémantique pour que et la grammaire soit LALR(1), par contre dans la 3ème édition de cette spécification\cite{Java02}, la grammaire est (grandement) ambiguë, et ceci montre la difficulté pour faire les transformations adéquates. 
+
+Puisque c'est difficile de construire (ou maintenir) des grammaires LR(1) qui garde la sémantique voulu au départ, les développeurs se sont intéressé a d'autre algorithme comme CYK\cite{Younger}, Earley\cite{Earley}, GLR\cite{Tomita}, qui eux ont été développer pour traitement de langage naturelle a la base (gère l'ambiguïté).
+
+Quand on utilise la grammaire comme point d'entré pour la définition de la sémantique, on distingue souvent entre \textbf{reconnaisseur syntaxique} qui détermine simplement si un mot appartient ou pas a la grammaire, et \textbf{analyseur syntaxique} qui retourne la dérivation détaillé d'un mot si elle existe.
+
+Dans leurs versions de base, l'algorithme CYK et Earley sont des reconnaisseurs syntaxique, alors que GLR est un analyseur syntaxique. Sauf que l'analyseur syntaxique GLR de Tommita a une complexité polynomiale infinie.
+
+Par contre Elizabeth Scott\cite{Scott}, a crée deux algorithme d'analyse syntaxique basé sur Earley, ayant une complexité cubique dans le pire des cas.
+
+Nous allons tout d'abord comprendre les méthodes d'Elizabeth Scott, est proposer une application écrite en C++ qui implémente ces méthode la.
+
+\chapter{Introduction}
 \section{Qu'est ce que l'alogirthme Earley ?}
 L'algorithme Earley\footnote{text}, est un parmi les nombreux algorithmes d'analyse syntaxique, est comme tout ces algorithmes, \textbf{Earley} a besoin d'une grammaire
 \begin{lstlisting}
@@ -290,5 +307,6 @@ Si un symbole non terminal correspond à la chaîne vide, cela peut être indiqu
 A : ;
 
 le symbole de départ est considéré comme le côté gauche de la première règle de grammaire dans la section des règles
-
+\bibliographystyle {plain}
+\bibliography{mabiblio}             
 \end{document}
