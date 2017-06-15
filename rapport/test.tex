@@ -74,16 +74,16 @@
 \begin{titlepage}
    \vspace*{\stretch{1.0}}
    \begin{center}
-   	  \Large\textbf{Projet TRE 2016/2017}\\
+   	  \Large\textbf{Algorithme Earley 2016/2017}\\
       \Large\textbf{Rapport}\\
-      \large\textit{Abderrazak ZIDANE}
+      \large\textit{Abderrazak ZIDANE\footnote{zidane.rezzak@gmail.com}}
    \end{center}
    \vspace*{\stretch{2.0}}
 \end{titlepage}
 
 \chapter{Introduction}
 \section{Qu'est ce que l'alogirthme Earley ?}
-L'algorithme Earley, est un parmi les nombreux algorithmes d'analyse syntaxique, est comme tout ces algorithmes, \textbf{Earley} a besoin d'une grammaire
+L'algorithme Earley\footnote{text}, est un parmi les nombreux algorithmes d'analyse syntaxique, est comme tout ces algorithmes, \textbf{Earley} a besoin d'une grammaire
 \begin{lstlisting}
 S = S + P
   | P
@@ -246,6 +246,7 @@ Au finale notre table Earley ressemblera a :
 	\multicolumn{1}{|l|}{\begin{tabular}[c]{@{}l@{}}P = P * •F (3)\\ F = •( S ) (5)\\ F = •n (5)\end{tabular}}                                            & \multicolumn{1}{l|}{}          & \multicolumn{1}{l|}{\begin{tabular}[c]{@{}l@{}}F = n• (5)\\ P = P * F• (3)\\ S = P• (3)\\ P = P• * F (3)\\ F = ( S• ) (2)\\ S = S• + P (3)\end{tabular}} & \multicolumn{1}{l|}{}          & \multicolumn{1}{l|}{{\color[HTML]{333333} \begin{tabular}[c]{@{}l@{}}F = ( S )• (2)\\ P = F• (2)\\ S = S + P• (0)\end{tabular}}}        &                       &                                                                                                                                                                       &                                &                                                                                                                                                      \\ \cline{1-1} \cline{3-3} \cline{5-5}
 \end{tabular}
 
+On arrive donc a la fin (TODO : condition de reussite)
 \section{Que va t'on faire ?}
 Nous allons crée un programme qui va avoir en entré une grammaire, est aura en sorti un analyseur syntaxique suivant l'algorithme Earley.
 
@@ -260,6 +261,7 @@ Notre outils aura en entrée une grammaire est en sortie, on aura un analyseur s
 	\item La première entrée de notre programme, sera un fichier, qui contiendra la description de la grammaire en format Yacc
 	\item La deuxième entrée de notre programme sera un deuxieme fichier, qui contiendra la chaine a analyser.
 	\item La sorti sera un troisième fichier contenant L'AST
+	\item Les noms de varibale, et de fonction serons en anglais, referai vous donc au dictionnaire (a faire)
 \end{itemize}
 
 Le programme sera exécuter en ligne de commande suivant la syntaxe suivant: 
@@ -270,6 +272,23 @@ file1 : le fichier de grammaire
 file2 : le fichier contenant la chaine a analysé
 file3 : le fichier contenant l'AST
 
-\section{Explication du code}
+\section{Le Format Yacc}
+Pour la grammaire que nous fournissons au programme, nous utiliserons le format Yacc simplifié suivant:
+
+Une règle de grammaire a la forme:
+
+A  :  BODY  ;
+
+A représente un symbole non-terminal, et BODY représente une séquence de zéro ou plus de terminaux et non-terminaux. La côlon et le point-virgule sont la ponctuation de Yacc.
+
+un symbole terminal doit être déclaré comme telle au debut du fichier:
+
+\%token  n1  n2  p
+
+Si un symbole non terminal correspond à la chaîne vide, cela peut être indiqué de manière évidente:
+
+A : ;
+
+le symbole de départ est considéré comme le côté gauche de la première règle de grammaire dans la section des règles
 
 \end{document}
