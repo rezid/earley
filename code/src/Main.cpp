@@ -3,7 +3,7 @@
 #include <fstream>
 #include<string>
 #include <regex>
-#include "Grammar.h"
+#include "Grammar.hpp"
 #include<sstream>
 #include<vector>
 

@@ -1,6 +1,6 @@
-#include "EarleyTable.h"
-#include "EarleyItem.h"
-#include "Rule.h"
+#include "EarleyTable.hpp"
+#include "EarleyItem.hpp"
+#include "Rule.hpp"
 #include <iostream>
 #include <algorithm>
 

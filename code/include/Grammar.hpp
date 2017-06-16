@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Rule.h"
-#include "EarleyTable.h"
-#include "EarleySet.h"
+#include "Rule.hpp"
+#include "EarleyTable.hpp"
+#include "EarleySet.hpp"
 
 
 class Grammar

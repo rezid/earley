@@ -1,6 +1,6 @@
 #pragma once
 
-#include "EarleyItem.h"
+#include "EarleyItem.hpp"
 #include <vector>
 
 class EarleySet
@@ -14,6 +14,6 @@ public:
 	void print_set();
 	
 	int size();
-	EarleyItem get_item(int i);
+	EarleyItem& get_item(int i);
 };
 

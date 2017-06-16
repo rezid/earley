@@ -1,6 +1,6 @@
 #pragma once
 
-#include "EarleySet.h"
+#include "EarleySet.hpp"
 #include <vector>
 
 class EarleyTable
