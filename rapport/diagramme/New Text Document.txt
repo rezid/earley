@@ -1,0 +1,211 @@
+\chapter{Introduction}
+\section{Qu'est ce que l'alogirthme Earley ?}
+L'algorithme Earley\footnote{text}, est un, parmi les nombreux algorithmes d'analyse syntaxique, est comme tout ces algorithmes, \textbf{Earley} a besoin d'une grammaire
+\begin{lstlisting}
+S = S + P
+  | P
+P = P * F
+  | F
+F = ( S )
+  | n
+
+\end{lstlisting}
+... pour transformer une chaine de mot ...
+
+\begin{tabular}{|l|l|l|l|l|l|l|l|l|}
+	\hline
+	n & + & ( & n & * & n & + & n & ) \\ \hline
+\end{tabular}
+
+... en un jolie arbre syntaxique (AST)
+
+\begin{tikzpicture}[sibling distance=5em,
+every node/.style = {shape=rectangle, rounded corners,
+	draw, align=center,
+	top color=white, bottom color=blue!20}]]
+
+\node {S}
+child { node {S} 
+        child { node {n} } }
+child { node {+} }
+child { node {P}
+	child { node {F}
+			child { node {(}}
+			child { node {...}}
+			child { node {)} } } };
+\end{tikzpicture}
+
+Jusqu'à présent rien de spéciale comparé au autre algotithme qu'on conné. 
+\section{Pourquoi devrions-nous nous soucier?}
+Le plus grand avantage d'Erley, est sans doute son accessibilité. La plus part des autres algorithme offre une restriction sur le type de grammaires, utilisé une grammaire récursif gauche et en rentrera dans une boucle infini, utilisé un autre type et l'algorthme ne marchera plus. Biensur il y a des counternement qu'on peux faire, mais souvant sa complique d'avantage l'algorithme et rendra le travaille plus complexe.
+
+Pour dire simple Earley marche avec tout.
+
+D'une autre part, pour avoir cette généralité, nous devons sacrifié la vitesse. On ne pourra donc pas rivaliser avec des algorithme comme Flex/Bison en terme de rapidité brute. Ce n'ai si grave, puisque
+\begin{itemize}
+	\item Earley a une complixité cubique O(3), dans les pires des cas, ces meme cas qui ne pourons etre trété pas d'autre algorithme
+	\item La plus part des grammaire simple aurons une complexité linaire
+	\item Meme la pire grammaire nom-ambigue pourra etre analyser en O(3)
+\end{itemize}
+\section{Vocabulaire}
+Du point de vu de l'algorithme Earley, la grammaire est constitué de règle. Voici un exemple de règle
+\begin{lstlisting}
+S = S + P
+\end{lstlisting}
+S est un symbole non terminale, et tout ce qui ne commence pas avec une lettre majuscule est considéré comme étant un symbole terminale (le symbole + dans notre exemple).
+
+Dans le jargons d'Earley, il y a la notion d'items, Voici un item:
+\begin{lstlisting}
+A = B • * C  (4)
+\end{lstlisting}
+c'est juste une règles de grammaire avec des informations en plus, qui représente une reconnaissance partielle.
+\begin{itemize}
+	\item Le point représente la position courante qui indique jusq'ou on a parvenu a parser
+	\item Le chiffre 4 représente la position initial sur l'entré qu'on veux parser
+\end{itemize}
+
+De plus Earley introduit la notion d'ensemble d'items, chaque ensemble est carterisé par le fait que les item qui y sont associé, ont la même position courante
+
+Et tout ces ensemble la, sont souvent nommé table Earley
+
+\section{Prédiction, Lecture et Complétion}
+
+Pour construire la table Earley, on a besoin de définir trois opérations élémentaire qui s'applique sur un item pour produire un autre item:
+\begin{itemize}
+	\item Prédiction: le symbole a droite du point est un nom terminal, on ajoute les réglés de ce symbole au même ensemble 
+	\item Lecture: le symbole a droite du point est un terminal, on regarde si se symbole coïncide avec la position courante, si oui, on ajoute cette item a l'ensemble suivant.
+	\item Complétion: in n'ya rien a droite du point, et dans se cas il ya reconnaissance partielle, on regarde l'item parent, et on l'ajoute a cette ensemble
+\end{itemize}
+
+\section{Exemple de construction de table d'Earley}
+Reprenons cette grammaire:
+\begin{lstlisting}
+S = S + P
+| P
+P = P * F
+| F
+F = ( S )
+| n
+\end{lstlisting}
+
+on veux reconnaitre l'entrée
+
+\begin{tabular}{|l|l|l|l|l|l|l|}
+	\hline
+	n & + & ( & n & * & n & ) \\ \hline
+\end{tabular}
+
+A l'étape 0, le calcule démarre avec l'ensemble E(0) et les règles de l'axiome 'S'
+
+
+\begin{tabular}{|c|}
+	\hline
+	\textbf{E(0)}                                                       \\ \hline
+	\begin{tabular}[c]{@{}c@{}}S = •S + P (0)\\ S = •P (0)\end{tabular} \\ \hline
+\end{tabular}
+
+la prédiction du premier item de E(0) nous donnera les mêmes 2 items de E(0), et donc pas besoin de faire quoi que se sois, donc une la grammaire récursive gauche ne posera pas de problème a notre algorithme.
+
+La prédiction du deuxième item de E(0) générera deux nouveaux items:
+
+\begin{tabular}{|c|}
+	\hline
+	\textbf{E(0)}                                                                                    \\ \hline
+	\begin{tabular}[c]{@{}c@{}}S = •S + P (0)\\ S = •P (0)\\ P = •P * F (0)\\ P = •F (0)\end{tabular} \\ \hline
+\end{tabular}
+
+Le prédiction du 3ème item de E(0) ne sert a rien. La prédiction du 4ème item de E(0) générera deux nouveaux items supplémentaire:
+
+\begin{tabular}{|c|}
+	\hline
+	\textbf{E(0)}                                                                                                                   \\ \hline
+	\begin{tabular}[c]{@{}c@{}}S = •S + P (0)\\ S = •P (0)\\ P = •P * F (0)\\ P = •F (0)\\ F = •( S ) (0)\\ F = •n (0)\end{tabular} \\ \hline
+\end{tabular}
+
+La Lecture du 5ème item de E(0) échoue puisque le symbole ne correspond pas a l'entrée.
+
+La lecture du 6ème item se fait avec succès, est génère un nouveau item dans l'ensemble suivant E(1)
+
+\begin{tabular}{|c|}
+	\hline
+	\textbf{E(1)} \\ \hline
+	F = n• (0)    \\ \hline
+\end{tabular}
+
+On a traité tout les items de E(0), attaquons nous a l'ensemble E(1)
+
+La Complétion du premier item de E(1), nous fait ajouter le 4ème item de E(0) a E(1):
+
+\begin{tabular}{|c|}
+	\hline
+	\textbf{E(1)}                                                   \\ \hline
+	\begin{tabular}[c]{@{}c@{}}F = n• (0)\\ P = F• (0)\end{tabular} \\ \hline
+\end{tabular}
+
+la Complétion du deuxième item de E(1), nous fait ajouter le deuxième et troisième item de E(0) dans E(1)
+
+\begin{tabular}{|c|}
+	\hline
+	\textbf{E(1)}                                                                                 \\ \hline
+	\begin{tabular}[c]{@{}c@{}}F = n• (0)\\ P = F• (0)\\ S = P• (0)\\ P = P• * F (0)\end{tabular} \\ \hline
+\end{tabular}
+
+...
+
+Au finale notre table Earley ressemblera a :
+
+\begin{tabular}{lllllllll}
+	\cline{1-1} \cline{3-3} \cline{5-5} \cline{7-7} \cline{9-9}
+	\multicolumn{1}{|c|}{\textbf{E(0)}}                                                                                                                   & \multicolumn{1}{c|}{\textbf{}} & \multicolumn{1}{c|}{\textbf{E(1)}}                                                                                                                       & \multicolumn{1}{c|}{}          & \multicolumn{1}{c|}{\textbf{E(2)}}                                                                                                      & \multicolumn{1}{l|}{} & \multicolumn{1}{c|}{\textbf{E(3)}}                                                                                                                                    & \multicolumn{1}{c|}{\textbf{}} & \multicolumn{1}{c|}{\textbf{E(4)}}                                                                                                                   \\ \cline{1-1} \cline{3-3} \cline{5-5} \cline{7-7} \cline{9-9} 
+	\multicolumn{1}{|l|}{\begin{tabular}[c]{@{}l@{}}S = •S + P (0)\\ S = •P (0)\\ P = •P * F (0)\\ P = •F (0)\\ F = •( S ) (0)\\ F = •n (0)\end{tabular}} & \multicolumn{1}{l|}{}          & \multicolumn{1}{l|}{\begin{tabular}[c]{@{}l@{}}F = n• (0)\\ P = F• (0)\\ S = P• (0)\\ P = P• * F (0)\\ S = S• + P (0)\end{tabular}}                      & \multicolumn{1}{l|}{}          & \multicolumn{1}{l|}{\begin{tabular}[c]{@{}l@{}}S = S + •P (0)\\ P = •P * F (2)\\ P = •F (2)\\ F = •( S ) (2)\\ F = •n (2)\end{tabular}} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{\begin{tabular}[c]{@{}l@{}}F = ( •S ) (2)\\ S = •S + P (3)\\ S = •P (3)\\ P = •P * F (3)\\ P = •F (3)\\ F = •( S ) (3)\\ F = •n (3)\end{tabular}} & \multicolumn{1}{l|}{}          & \multicolumn{1}{l|}{\begin{tabular}[c]{@{}l@{}}F = n• (3)\\ P = F• (3)\\ S = P• (3)\\ P = P• * F (3)\\ S = S• + P (3)\\ F = ( S• ) (2)\end{tabular}} \\ \cline{1-1} \cline{3-3} \cline{5-5} \cline{7-7} \cline{9-9} 
+	&                                &                                                                                                                                                          &                                &                                                                                                                                         &                       &                                                                                                                                                                       &                                &                                                                                                                                                      \\ \cline{1-1} \cline{3-3} \cline{5-5}
+	\multicolumn{1}{|c|}{\textbf{E(5)}}                                                                                                                   & \multicolumn{1}{c|}{\textbf{}} & \multicolumn{1}{c|}{\textbf{E(6)}}                                                                                                                       & \multicolumn{1}{c|}{\textbf{}} & \multicolumn{1}{c|}{\textbf{E(7)}}                                                                                                      &                       &                                                                                                                                                                       &                                &                                                                                                                                                      \\ \cline{1-1} \cline{3-3} \cline{5-5}
+	\multicolumn{1}{|l|}{\begin{tabular}[c]{@{}l@{}}P = P * •F (3)\\ F = •( S ) (5)\\ F = •n (5)\end{tabular}}                                            & \multicolumn{1}{l|}{}          & \multicolumn{1}{l|}{\begin{tabular}[c]{@{}l@{}}F = n• (5)\\ P = P * F• (3)\\ S = P• (3)\\ P = P• * F (3)\\ F = ( S• ) (2)\\ S = S• + P (3)\end{tabular}} & \multicolumn{1}{l|}{}          & \multicolumn{1}{l|}{{\color[HTML]{333333} \begin{tabular}[c]{@{}l@{}}F = ( S )• (2)\\ P = F• (2)\\ S = S + P• (0)\end{tabular}}}        &                       &                                                                                                                                                                       &                                &                                                                                                                                                      \\ \cline{1-1} \cline{3-3} \cline{5-5}
+\end{tabular}
+
+On arrive donc a la fin (TODO : condition de reussite)
+\section{Que va t'on faire ?}
+Nous allons crée un programme qui va avoir en entré une grammaire, est aura en sorti un analyseur syntaxique suivant l'algorithme Earley.
+
+Par la suite en va modifier cette algorithme pour notre besoin (TO DO :)
+
+\chapter{Développement de l'outils}
+Le programme sera écrit en C++, mais sera facilement traduit dans d'autre langage si nécessaire.
+\section{Petite Pré-analyse avant de commencer}
+Notre outils aura en entrée une grammaire est en sortie, on aura un analyseur syntaxique. Plusieurs question se sont posés durant le développement de cette outils, Voila un récapitulatif des décision prise:
+\begin{itemize}
+	\item Nous appellerons notre programme earley
+	\item La première entrée de notre programme, sera un fichier, qui contiendra la description de la grammaire en format Yacc
+	\item La deuxième entrée de notre programme sera un deuxieme fichier, qui contiendra la chaine a analyser.
+	\item La sorti sera un troisième fichier contenant L'AST
+	\item Les noms de varibale, et de fonction serons en anglais, referai vous donc au dictionnaire (a faire)
+\end{itemize}
+
+Le programme sera exécuter en ligne de commande suivant la syntaxe suivant: 
+
+earley <file1> <file2> <file3>
+
+file1 : le fichier de grammaire
+file2 : le fichier contenant la chaine a analysé
+file3 : le fichier contenant l'AST
+
+\section{Le Format Yacc}
+Pour la grammaire que nous fournissons au programme, nous utiliserons le format Yacc simplifié suivant:
+
+Une règle de grammaire a la forme:
+
+A  :  BODY  ;
+
+A représente un symbole non-terminal, et BODY représente une séquence de zéro ou plus de terminaux et non-terminaux. La côlon et le point-virgule sont la ponctuation de Yacc.
+
+un symbole terminal doit être déclaré comme telle au debut du fichier:
+
+\%token  n1  n2  p
+
+Si un symbole non terminal correspond à la chaîne vide, cela peut être indiqué de manière évidente:
+
+A : ;
+
+le symbole de départ est considéré comme le côté gauche de la première règle de grammaire dans la section des règles
+\bibliographystyle {plain}
+\bibliography{mabiblio}  
