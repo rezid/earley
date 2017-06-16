@@ -14,7 +14,6 @@ bool parse_grammar_file();
 bool create_earley_table();
 
 string last_error;
-ofstream ast_file;
 ifstream grammar_file, string_file;
 Grammar grammar;
 vector<string> input;
@@ -44,7 +43,6 @@ int main(int argc, char* argv[])
 		cout << "\nFAIL !!!!!!!!\n" << endl;
 
 	// Closing the files
-	ast_file.close();
 	grammar_file.close();
 	string_file.close();
 	return 0;
@@ -61,7 +59,6 @@ bool parse_commande_line_arguments(int argc, char* argv[])
 	// Open the files
 	grammar_file.open(argv[1]);
 	string_file.open(argv[2]);
-	ast_file.open("ast.txt", ios::trunc);
 
 	// Test if the file are opened
 	if (!grammar_file.is_open()) {
@@ -74,10 +71,6 @@ bool parse_commande_line_arguments(int argc, char* argv[])
 		return false;
 	}
 
-	if (!ast_file.is_open()) {
-		last_error = "parse_commande_line_arguments : can't open ast_file";
-		return false;
-	}
 	return true;
 }
 
