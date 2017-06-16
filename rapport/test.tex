@@ -265,9 +265,13 @@ cette fois si c'est la bonne, la duplication de la règle problématique a permi
 On viens de trouver un algorithme d'analyse syntaxique basé sur Earley, mais quand est-il de la complexité ? Ben, comme démontrer par Johnson\cite{Johnson} pour un problème similaire et comme confirmé par Scott\cite{Scott}, la complexité polynomiale est infinie. On peut se dire qu'on a gardé l'algorithme de base d'Earley et donc la complexité aurais du être $O(n^3)$, mais la duplication des règles engendrent un problème, en effet, la taille de la table d'Earley ne peut être borné par $O(n^p)$ pour n'importe quelle entier p. Et puisque la complexité en taille et en temps sont liées, on aura une complexité polynomiale infinie.
 
 \chapter{L'algorithme}
-Dans cette section, nous allons décrire l'algorithme utilisé par Scott\cite{Scott}. Cette algorithme sera utilisé par notre programme que nous décrivons dans les chapitre suivant.
+Dans cette section, nous allons nous baser sur l'algorithme d'Earley de base et les travaux de Scott\cite{Scott} ainsi que la conclusion de la précédente section, pour donner un algorithme qui sera de complexité $O(n^3)$ en temps et en mémoire. Il sera ensuite utilisé par notre programme que nous décrivons dans les sections suivantes.
 
-Scott a proposée deux versions. Dans la premier version, elle crée d'abord la table Earley décoré avec des pointeurs , ensuite elle crée le représentation SPPF (la foret) de toutes les dérivations possibles. La deuxième version, elle concatène les deux opérations ensembles. Nous avons choisie d'expliquer et d'implémenter la premier version pour bien cerné et comprendre l'algorithme puisque tout est séparé.
+Scott c'est rendu compte que il suffit d'ajouter des pointeurs entre items pour pouvoir crée un analyseur syntaxique d'Earley. les pointeur seront nommé pour pouvoir construire la structure SPPF en une seule itération. 
+
+Scott définit deux types de pointeur, un pointeur de réduction, et un pointeur de décalage qui font allusion au opération shift/reduce dans les autres algorithmes d'analyse syntaxique.
+
+L'idée est de d'abord crée la table Earley décoré avec ces fameux pointeurs , ensuite on fait une seule itération sur cette table pour déduire la représentation SPPF (la foret) de toutes les dérivations possibles.
 
 \section{Création de la table d'Earley}
 Les opérations de base du reconnaisseur Earley, qui sont: prédiction, lecture et complétion vont être remplacer avec d'autre opérations.
@@ -304,6 +308,66 @@ Pour chaque item $t = (B :== \tau, k)$ appartenant a $E_i$ et pour chaque item c
 On ajoute un pointeur de réduction nommé $k$ de $p$ a $t$
 
 Si $\tau \neq \epsilon$, On ajoute un pointeur de décalage nommé aussi $k$ de $p$ a $q$.
+
+\section{L'Algorithme d'analyse syntaxique}
+
+Voici l'algorithme qui permet de construire la représentation SPPF a partir de la table Earley modifié:
+\begin{lstlisting}[frame=single]
+Buildtree(u, p) 
+{
+	suppose that ¤$p \in E_i$¤ and that p is of the form ¤$(A ::= \alpha • \beta, j)$¤
+	
+	mark ¤$p$¤ as processed
+	
+	if ¤$p =(A ::= •,j)$¤ {
+		if there is no SPPF node ¤$v$¤ labelled ¤$(A, i, i)$¤
+		create one with child node ¤$\epsilon$¤
+		if ¤$u$¤ does not have a family ¤$(v)$¤ then add the family ¤$(v)$¤ to ¤$u$¤ }
+		
+	if ¤$p =(A ::= \alpha • \beta, j)$¤ (where ¤$a$¤ is a terminal) {
+		if there is no SPPF node ¤$v$¤ labelled ¤$(a, i − 1,i)$¤ create one
+		if ¤$u$¤ does not have a family ¤$(v)$¤ then add the family ¤$(v)$¤ to ¤$u$¤ }
+		
+	if ¤$p =(A ::= C • \beta, j)$¤ (where ¤$C$¤ is a non-terminal) {
+		if there is no SPPF node ¤$v$¤ labelled ¤$(C, j, i)$¤ create one
+		if ¤$u$¤ does not have a family ¤$(v)$¤ then add the family ¤$(v)$¤ to ¤$u$¤ 
+		for each reduction pointer from ¤$p$¤ labelled ¤$j$¤ {
+			suppose that the pointer points to ¤$q$¤
+			if ¤$q$¤ is not marked as processed ¤$Buildtree(v,q)$¤ } }
+			
+			
+	if ¤$p =(A ::= \alpha' a • \beta, j)$¤ (where a is a terminal, ¤$\alpha' \neq \epsilon$¤) {
+		if there is no SPPF node ¤$v$¤ labelled ¤$(a, i − 1,i)$¤ create one
+		if there is no SPPF node ¤$w$¤ labelled ¤$(A ::= \alpha' • a \beta, j, i − 1)$¤ create one
+		for each target ¤$p'$¤ of a predecessor pointer labelled ¤$i − 1$¤ from ¤$p$¤ {
+			if ¤$p'$¤ is not marked as processed ¤$Buildtree(w,p')$¤ }
+		if ¤$u$¤ does not have a family ¤$(w, v)$¤ add the family ¤$(w, v)$¤ to ¤$u$¤ }
+			
+	if ¤$p =(A ::= \alpha' C • \beta, j)$¤ (where ¤$C$¤ is a non-terminal, ¤$\alpha' \neq \epsilon$¤) {
+		for each reduction pointer from ¤$p$¤ {
+			suppose that the pointer is labelled ¤$l$¤ and points to ¤$q$¤
+			if there is no SPPF node ¤$v$¤ labelled ¤$(C, l, i)$¤ create one
+			if ¤$q$¤ is not marked as processed ¤$Buildtree(v,q)$¤
+			if there is no SPPF node ¤$w$¤ labelled ¤$(A ::= \alpha'x • C \beta, j, l)$¤ create one 
+			for each target ¤$p'$¤ of a predecessor pointer labelled ¤$l$¤ from ¤$p$¤ {
+				if ¤$p'$¤ is not marked as processed ¤$Buildtree(w,p')$¤ }
+			if ¤$u$¤ does not have a family ¤$(w, v)$¤ add the family ¤$(w, v)$¤ to ¤$u$¤ }}
+}
+		
+		
+\end{lstlisting}
+
+Et Pour construire la représentation entière depuis la racine, on exécute la fonction suivante: 
+
+\begin{lstlisting}[frame=single]		
+PARSER { 
+	create an SPPF node ¤$u0$¤ labelled ¤$(S, 0, n)$¤
+	for each decorated item ¤$p =(S ::= \alpha •, 0) \in E_n$¤ ¤$Buildtree(u0, p)$¤ 
+}
+
+
+\end{lstlisting}			
+		
 \bibliographystyle {plain}
 \bibliography{mabiblio}  
 \end{document}
