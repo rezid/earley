@@ -364,10 +364,52 @@ PARSER {
 	create an SPPF node ¤$u0$¤ labelled ¤$(S, 0, n)$¤
 	for each decorated item ¤$p =(S ::= \alpha •, 0) \in E_n$¤ ¤$Buildtree(u0, p)$¤ 
 }
+\end{lstlisting}
 
+\section{Problème de la règle nulle}
+l'algorithme précédent est parfait, néanmoins, on remarque qu'il y a un problème pour construire la table Earley (la version décoré avec des pointeurs) quand il y a des symboles annulable dans la grammaire.
 
-\end{lstlisting}			
-		
+Prenons un exemple de grammaire pour illustrer le problème:
+\begin{lstlisting}		
+A :== ¤$\epsilon$¤
+A :== B
+B :== A
+\end{lstlisting}
+
+Si nous construisons notre table Earley pour reconnaitre le mot vide, on aura le résultat suivant:
+\begin{lstlisting}
+   E(0)	
+A :== • (0)
+A :== •B (0)
+B :== •A (0)
+\end{lstlisting}
+et nous aurons le graphe SPPF suivant:
+
+\includegraphics[width=1.5cm]{Diagramme6.eps}
+
+il manque deux item dans notre ensemble $E_0$, a savoir \lstinline|A :== B • (0)| et \lstinline|B :== A • (0)|.
+
+Le problème vient d'un mauvais timing pour faire l'opération de complétion. En effet, au moment de compléter \lstinline|A :== • (0)|, l'item \lstinline|B :== •A (0)| n'ai pas encore présent dans $E_0$.
+
+Pour résoudre ce problème, il ya la méthode simple qui consiste a faire plusieurs itérations de complétion et de prédiction sur chaque ensemble $E_i$ jusqu'à aucun item n'ai ajouté. Plusieurs itération signifie complexité dans le pire cas va s'envoler, et donc on utilisera pas cette méthode.
+
+La solution a ce problème est donné par Aycock et Horspool\cite{Aycock}. Ils ont remarqué qu'il pouvait faire avancer certain items sans attendre de faire une complétion. Plus précisément, au moment de la prédiction de $q = (B :== \alpha • C \tau, k) \in E_i$, si $C$ est annulable, alors on ajoute aussi $q = (B :== \alpha C • \tau, k)$ a $E_i$. On appellera cette opération, la prédiction magique.
+
+Cette solution n'ai pas complète encore, puisque il faut aussi mettre les différents pointeurs de réduction a ces nouveaux items issu de la prédiction magique. L'idée est de marqué l'item suite a une redirection magique. Ensuite a la fin du des opérations de prédictions et de complétions sur $E_i$, on parcours tout les items marqué (suite une prédiction magique) et on complète les pointeur de réductions qui manque.
+
+\section{Détecter qu'un symbole est annulable}
+Le réel problème maintenant est de trouver (ou crée) un algorithme pour détecter les symboles annulables et que sa complexité, doit être inférieur a $O(n_3)$, qui est la complexité de l'analyseur syntaxique Earley.
+
+Il s'avère que la solution est simple, On va lire chaque règle de la grammaire, et maintenir une liste de symbole annulable qu'on a trouvé. Si une règle est annulable ou bien contient uniquement des symbole annulable (dans sa parti droite), alors on ajoute le symbole du gauche de cette règle a cette liste, et on recommence le processus, jusqu'à aucun symbole n'ai rajouté.
+
+Cette algorithme est largement suffisant pour notre analyseur Earley et a une complexité quadratique $O(n_2)$ par rapport a la taille de la grammaire.
+
+Il s'avère qu'il existe un meilleur algorithme pour ce problème, avec une complexité linaire $O(n)$. Il a été documenté dans les pages 293-295 du livre sur Marpa\cite{Marpa}. Mais on va pas l'utiliser dans notre programme puisque cette algorithme est assez complexe a implémenter et va grandement diminuer la lisibilité du code.
+
+\chapter{Le programme}
+Dans cette section, je vais mettre tout ce qui a un rapport avec le programme que j'ai développer. A savoir, comment l'utiliser, le diagramme de classe et les différente dépendance de notre programme.
+\section{L'utilisation}
+
 \bibliographystyle {plain}
 \bibliography{mabiblio}  
 \end{document}
