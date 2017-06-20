@@ -1,7 +1,11 @@
-*Release*
-*.vs/
 rapport/*.aux
 rapport/*.log
 rapport/*.gz
 rapport/*.bbl
 rapport/*.blg
+
+# Ignore the build and lib dirs
+build
+lib/*
+
+

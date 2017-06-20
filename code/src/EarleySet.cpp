@@ -1,4 +1,4 @@
-#include "EarleySet.h"
+#include "EarleySet.hpp"
 #include <iostream>
 
 using namespace std;
@@ -28,7 +28,7 @@ int EarleySet::size()
 	return set.size();
 }
 
-EarleyItem EarleySet::get_item(int i)
+EarleyItem& EarleySet::get_item(int i)
 {
 	return set[i];
 }

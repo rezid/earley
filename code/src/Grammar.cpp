@@ -1,6 +1,6 @@
-#include "Grammar.h"
+#include "Grammar.hpp"
 #include <iostream>
-#include "EarleyItem.h"
+#include "EarleyItem.hpp"
 
 using namespace std;
 

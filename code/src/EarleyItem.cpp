@@ -1,5 +1,5 @@
-#include "EarleyItem.h"
-#include "Rule.h"
+#include "EarleyItem.hpp"
+#include "Rule.hpp"
 
 using namespace std;
 
