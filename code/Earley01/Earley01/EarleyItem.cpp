@@ -1,5 +1,6 @@
 #include "EarleyItem.h"
 #include "Rule.h"
+#include<iostream>
 
 using namespace std;
 
@@ -37,19 +38,13 @@ void EarleyItem::print_item()
 bool EarleyItem::operator==(const EarleyItem & item) const
 {
 	if (rule_ptr == item.rule_ptr && position == item.position && item_start == item.item_start)
-		return true;
+	   return true;
 
 	return false;
 }
 
-EarleyItem* EarleyItem::next_item(std::string input_terminal_symbole, bool from_magical_reduction)
+EarleyItem* EarleyItem::next_item(bool from_magical_reduction)
 {
-	if (position == rule_ptr->size())
-		return nullptr;
-
-	if ((rule_ptr->get_body())[position] != input_terminal_symbole)
-		return nullptr;
-
 	EarleyItem* item_ptr = new EarleyItem{ rule_ptr, position + 1, item_start };
 	item_ptr->symbole_before_position_is_null = false;
 	item_ptr->from_magical_reduction = from_magical_reduction;

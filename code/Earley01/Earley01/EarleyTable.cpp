@@ -29,6 +29,8 @@ void EarleyTable::compute_earley_table()
 		}
 	}
 
+
+
 	// Populate the reste of E(i)
 	for (int i = 0; i < table.size(); ++i) {
 		if (i != 0)

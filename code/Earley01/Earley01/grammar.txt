@@ -1,0 +1,9 @@
+%token b c;
+
+S : S T
+  | S;
+ 
+T : b
+  | S
+  | c;
+

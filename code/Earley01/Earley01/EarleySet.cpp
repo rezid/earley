@@ -29,7 +29,6 @@ void EarleySet::add_item_if_not_present(EarleyItem item1)
 			item.set_from_magical_reduction(b);
 			return;
 		}
-			
 	set.push_back(item1);
 }
 
@@ -73,8 +72,19 @@ void EarleySet::initialize()
 
 	// initialize using precedent set and add predecessor pointer
 	for (EarleyItem& item : precedent_set->set) {
-		EarleyItem* new_item = item.next_item(earley_table.get_input_symbol(item.get_position()), false);
+
+		EarleyItem* new_item = nullptr;
+		if (item.get_position() != item.get_rule()->get_body().size())
+			if (earley_table.get_grammar().is_terminal_symbole(item.next_symbole())) {
+				if (item.next_symbole() == item.get_rule()->get_body().at(item.get_position()))
+					new_item = item.next_item(false);
+			}
+			else
+				new_item = item.next_item(false);
+
+			
 		if (new_item != nullptr) {
+			
 			if (new_item->is_symbole_before_position_is_not_null()) {
 				EarleyItemPtr predecessor_ptr{ index - 1, &item };
 				new_item->add_predecessor_ptr(predecessor_ptr);
@@ -86,14 +96,15 @@ void EarleySet::initialize()
 
 void EarleySet::complete()
 {
-	for (EarleyItem& item : set)
-		if (item.is_complete())
-			completion(item);
-		else
-			if (earley_table.get_grammar().is_nullable_symbole(item.next_symbole()))
-				magical_prediction(item);
-			else if (earley_table.get_grammar().is_not_terminal_symbole(item.next_symbole()))
-				prediction(item);
+	for (int i = 0; i < set.size(); ++i)
+		if (set[i].is_complete())
+			completion(set[i]);
+		else {
+			if (earley_table.get_grammar().is_nullable_symbole(set[i].next_symbole()))
+				magical_prediction(set[i]);
+			else if (earley_table.get_grammar().is_not_terminal_symbole(set[i].next_symbole()))
+				prediction(set[i]);
+		}
 }
 
 void EarleySet::resolve_magical_prediction_reduction_ptr()
@@ -116,20 +127,28 @@ void EarleySet::resolve_magical_prediction_reduction_ptr()
 
 
 
-void EarleySet::prediction(EarleyItem& current_item)
+void EarleySet::prediction(EarleyItem current_item)
 {
 	for (Rule& r : earley_table.get_grammar().get_rule_list()) {
-		if (current_item.next_symbole() == r.get_main_symbole()) {
-			EarleyItem item{ &r, 0, index, false};
-			add_item_if_not_present(item);
+		if (current_item.get_position() != current_item.get_rule()->get_body().size()) {
+			if (current_item.next_symbole() == r.get_main_symbole()) {
+				EarleyItem item{ &r, 0, index, false };
+				add_item_if_not_present(item);
+			}
 		}
 	}
 }
 
-void EarleySet::magical_prediction(EarleyItem& current_item)
+void EarleySet::magical_prediction(EarleyItem current_item)
 {
 	// Create next item with is_from_magical_reduction = true
-	EarleyItem* item_ptr = current_item.next_item(earley_table.get_input_symbol(index), true);
+	EarleyItem* item_ptr = nullptr;
+	if (current_item.get_position() != current_item.get_rule()->get_body().size())
+		if (!earley_table.get_grammar().is_terminal_symbole(current_item.next_symbole()))
+			item_ptr = current_item.next_item(true);
+
+	if (item_ptr == nullptr)
+		return;
 
 	// Add predecessor pointer in some case
 	if (item_ptr->is_symbole_before_position_is_not_null()) {
@@ -141,26 +160,27 @@ void EarleySet::magical_prediction(EarleyItem& current_item)
 	add_item_if_not_present(*item_ptr);
 }
 
-void EarleySet::completion(EarleyItem& current_item)
+void EarleySet::completion(EarleyItem current_item)
 {
 	EarleySet& previous_set = earley_table.get_set(current_item.get_item_start());
 
 	for (EarleyItem& item : previous_set.set)
-		if (item.next_symbole() == current_item.get_rule()->get_main_symbole()) {
-			// Create item
-			EarleyItem* item_ptr = item.next_item(earley_table.get_input_symbol(index), false);
+		if (item.get_position() != item.get_rule()->get_body().size())
+			if (item.next_symbole() == current_item.get_rule()->get_main_symbole()) {
+				// Create item
+				EarleyItem* item_ptr = item.next_item(false);
 
-			// add reduction pointer
-			EarleyItemPtr reduction_ptr{ previous_set.index, &current_item };
-			item_ptr->add_reduction_ptr(reduction_ptr);
+				// add reduction pointer
+				EarleyItemPtr reduction_ptr{ previous_set.index, &current_item };
+				item_ptr->add_reduction_ptr(reduction_ptr);
 
-			// Add predecessor pointer in some case
-			if (item.is_symbole_before_position_is_not_null()) {
-				EarleyItemPtr predecessor_ptr{ previous_set.index, &item };
-				item_ptr->add_predecessor_ptr(predecessor_ptr);
+				// Add predecessor pointer in some case
+				if (item.is_symbole_before_position_is_not_null()) {
+					EarleyItemPtr predecessor_ptr{ previous_set.index, &item };
+					item_ptr->add_predecessor_ptr(predecessor_ptr);
+				}
+
+				// add the new item to the set E(i)
+				add_item_if_not_present(item);
 			}
-
-			// add the new item to the set E(i)
-			add_item_if_not_present(item);
-		}
 }

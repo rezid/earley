@@ -24,7 +24,7 @@ public:
 	std::string precedent_symbole();
 	void print_item();
 	bool operator== (const EarleyItem& item) const;
-	EarleyItem* next_item(std::string input_terminal_symbole, bool is_from_magical_reduction = false);
+	EarleyItem* next_item(bool is_from_magical_reduction = false);
 	int get_item_start();
 	int get_position();
 	Rule* get_rule();

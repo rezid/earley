@@ -10,15 +10,16 @@ class EarleySet
 {
 private:
 	std::vector<EarleyItem> set;
-	EarleySet* precedent_set;
+	
 	int index;
 	EarleyTable& earley_table;
 
-	void magical_prediction(EarleyItem& current_item);
-	void prediction(EarleyItem& current_item);
-	void completion(EarleyItem& current_item);
+	void magical_prediction(EarleyItem current_item);
+	void prediction(EarleyItem current_item);
+	void completion(EarleyItem current_item);
 
 public:
+	EarleySet* precedent_set;
 	EarleySet(EarleySet* precedent_set, EarleyTable& earley_table);
 
 	void set_precedent_set(EarleySet* precedent_set);

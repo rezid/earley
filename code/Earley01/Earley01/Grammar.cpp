@@ -44,15 +44,15 @@ void Grammar::print_rule_list()
 	cout << "-----------------------------------\n" << endl;
 }
 
-EarleyTable Grammar::create_earley_table_from_input(std::vector<std::string>& input_symbole_list) {
+EarleyTable* Grammar::create_earley_table_from_input(std::vector<std::string>& input_symbole_list) {
 	// Create an empty table
-	EarleyTable table{ *this, input_symbole_list };
+	EarleyTable* table_ptr = new EarleyTable{ *this, input_symbole_list };
 
 	// Compute the earley table
-	table.compute_earley_table();
+	table_ptr->compute_earley_table();
 
 	// return the earley table
-	return table;
+	return table_ptr;
 }
 
 bool Grammar::is_terminal_symbole(std::string symbole)

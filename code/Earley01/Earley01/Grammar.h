@@ -36,7 +36,7 @@ public:
 
 	void compute_nullable_symbole_list();
 	
-	EarleyTable create_earley_table_from_input(std::vector<std::string>& symbole_input_list);
+	EarleyTable* create_earley_table_from_input(std::vector<std::string>& symbole_input_list);
 
 };
 

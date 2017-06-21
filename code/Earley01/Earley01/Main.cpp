@@ -18,30 +18,30 @@ ofstream ast_file;
 ifstream grammar_file, string_file;
 Grammar grammar;
 vector<string> input;
-EarleyTable* table;
+EarleyTable* table_ptr;
 
 int main(int argc, char* argv[])
 {
 	if (!parse_commande_line_arguments(argc, argv)) {
 		cout << last_error << endl;
-		return 0;
+		return 1;
 	}
 
 	if (!parse_grammar_file()) {
 		cout << last_error << endl;
-		return 0;
+		return 2;
 	}
 
 	if (!create_earley_table()) {
 		cout << last_error << endl;
-		return 0;
+		return 3;
 	}
 
-	// Test if input string recognized or not
-	if (table->status())
-		cout << "\nSUCCESS !!!!!!!!\n" << endl;
-	else
-		cout << "\nFAIL !!!!!!!!\n" << endl;
+	//// Test if input string recognized or not
+	//if (table->status())
+	//	cout << "\nSUCCESS !!!!!!!!\n" << endl;
+	//else
+	//	cout << "\nFAIL !!!!!!!!\n" << endl;
 
 	// Closing the files
 	ast_file.close();
@@ -54,14 +54,19 @@ bool parse_commande_line_arguments(int argc, char* argv[])
 {
 	// The number of arguments should be 2
 	if (argc != 3) {
-		last_error = "parse_commande_line_arguments : number of argument should be 2";
-		return false;
+		// Open the files
+		grammar_file.open("grammar.txt");
+		string_file.open("string.txt");
+		ast_file.open("ast.txt", ios::trunc);
+	}
+	else {
+		// Open the files
+		grammar_file.open(argv[1]);
+		string_file.open(argv[2]);
+		ast_file.open("ast.txt", ios::trunc);
 	}
 
-	// Open the files
-	grammar_file.open(argv[1]);
-	string_file.open(argv[2]);
-	ast_file.open("ast.txt", ios::trunc);
+	
 
 	// Test if the file are opened
 	if (!grammar_file.is_open()) {
@@ -240,13 +245,13 @@ bool create_earley_table()
 		v.push_back(buf);
 
 	// Parse the buffer and in an earley table
-	table = &(grammar.create_earley_table_from_input(v));
+	table_ptr = grammar.create_earley_table_from_input(v);
 
 	// FOR DEBUG ONLY : comment it after work finish
 	grammar.print_terminal_symbole_list();
 
 	// FOR DEBUG ONLY : comment it after work finish
-	table->print_table();
+	table_ptr->print_table();
 
 	return true;
 }

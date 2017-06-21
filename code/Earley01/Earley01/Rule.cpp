@@ -72,7 +72,7 @@ void Rule::set_body(std::vector<std::string> body)
 	this->body = body;
 }
 
-std::vector<std::string> Rule::get_body()
+std::vector<std::string>& Rule::get_body()
 {
 	return body;
 }

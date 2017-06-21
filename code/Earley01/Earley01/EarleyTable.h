@@ -4,6 +4,9 @@
 #include "EarleySet.h"
 #include <vector>
 #include <string>
+#include <iostream>
+
+using namespace std;
 
 class Grammar;
 
@@ -23,11 +26,11 @@ public:
 	EarleyTable(Grammar& grammar, std::vector<std::string>& input_symbole_list)
 		: grammar(grammar), input_symbole_list(input_symbole_list)
 	{
-		for (int i = 0; i < input_symbole_list.size() + 1; ++i) {
-			table.push_back(EarleySet{ nullptr, *this });
+		table.resize(input_symbole_list.size() + 1, EarleySet{ nullptr, *this });
+
+		for (int i = 0; i < input_symbole_list.size() + 1; ++i)
 			if (i != 0)
 				table[i].set_precedent_set(&(table[i - 1]));
-		}
 	};
 
 	std::string get_input_symbol(int symbole_index);
