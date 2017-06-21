@@ -1,18 +1,44 @@
+
+#include <iostream>
+#include <algorithm>
+#include "Grammar.h"
 #include "EarleyTable.h"
 #include "EarleyItem.h"
 #include "Rule.h"
-#include <iostream>
-#include <algorithm>
 
 using namespace std; 
 
-EarleyTable::EarleyTable()
+
+std::string EarleyTable::get_input_symbol(int symbole_index)
 {
+	return input_symbole_list[symbole_index];
 }
 
-EarleyTable::EarleyTable(int input_string_size)
+Grammar & EarleyTable::get_grammar()
 {
-	table.resize(input_string_size + 1);
+	return grammar;
+}
+
+void EarleyTable::compute_earley_table()
+{
+	// Put start item(s) in E(0)
+	for (Rule& r : grammar.get_rule_list()) {
+		if (r.get_main_symbole() == grammar.get_start_symbole()) {
+			EarleyItem item{ &r, 0, 0 };
+			table[0].add_item_if_not_present(item);
+		}
+	}
+
+	// Populate the reste of E(i)
+	for (int i = 0; i < table.size(); ++i) {
+		if (i != 0)
+			table[i].initialize(); // initialization
+
+		table[i].complete(); // magical_prediction -> prediction -> completion
+		table[i].resolve_magical_prediction_reduction_ptr(); // resolve magical_prediction reduction pointer
+	}
+		
+		
 }
 
 void EarleyTable::add_item_to_set_if_not_present(int set_number, EarleyItem item)
@@ -55,3 +81,6 @@ int EarleyTable::size()
 {
 	return table.size();
 }
+
+
+

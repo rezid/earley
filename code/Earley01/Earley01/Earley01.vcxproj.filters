@@ -33,6 +33,12 @@
     <ClCompile Include="EarleyTable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="EarleyItemPtr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EarleyItemPtrList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Rule.h">
@@ -48,6 +54,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EarleyTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EarleyItemPtr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EarleyItemPtrList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -18,7 +18,7 @@ ofstream ast_file;
 ifstream grammar_file, string_file;
 Grammar grammar;
 vector<string> input;
-EarleyTable table;
+EarleyTable* table;
 
 int main(int argc, char* argv[])
 {
@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
 	}
 
 	// Test if input string recognized or not
-	if (table.status())
+	if (table->status())
 		cout << "\nSUCCESS !!!!!!!!\n" << endl;
 	else
 		cout << "\nFAIL !!!!!!!!\n" << endl;
@@ -189,13 +189,13 @@ bool parse_grammar_file()
 	}
 
 	// Complete the nullable symbole list
-	grammar.get_all_nullable_symboles();
+	grammar.compute_nullable_symbole_list();
 
 	// FOR DEBUG ONLY : comment it after work finish
-	grammar.print_nullable_symboles();
+	grammar.print_nullable_symbole_list();
 
 	// FOR DEBUG ONLY : comment it after work finish
-	grammar.print_all_rules();
+	grammar.print_rule_list();
 	return true;
 }
 
@@ -214,13 +214,13 @@ bool create_earley_table()
 		v.push_back(buf);
 
 	// Parse the buffer and in an earley table
-	table = grammar.parse_string(v);
+	table = &(grammar.create_earley_table_from_input(v));
 
 	// FOR DEBUG ONLY : comment it after work finish
-	grammar.print_terminal_symboles();
+	grammar.print_terminal_symbole_list();
 
 	// FOR DEBUG ONLY : comment it after work finish
-	table.print_table();
+	table->print_table();
 
 	return true;
 }

@@ -116,5 +116,10 @@ bool Rule::operator==(const Rule& rule) const
 	return false;
 }
 
+int Rule::size()
+{
+	return body.size();
+}
+
 
 

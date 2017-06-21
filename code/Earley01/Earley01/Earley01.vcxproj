@@ -141,6 +141,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="EarleyItem.cpp" />
+    <ClCompile Include="EarleyItemPtr.cpp" />
+    <ClCompile Include="EarleyItemPtrList.cpp" />
     <ClCompile Include="EarleySet.cpp" />
     <ClCompile Include="EarleyTable.cpp" />
     <ClCompile Include="Grammar.cpp" />
@@ -149,6 +151,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EarleyItem.h" />
+    <ClInclude Include="EarleyItemPtr.h" />
+    <ClInclude Include="EarleyItemPtrList.h" />
     <ClInclude Include="EarleySet.h" />
     <ClInclude Include="EarleyTable.h" />
     <ClInclude Include="Grammar.h" />

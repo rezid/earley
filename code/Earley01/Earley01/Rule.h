@@ -24,5 +24,6 @@ public:
 	void clear_rule();
 	void clear_body();
 	bool operator== (const Rule& rule) const;
+	int size();
 };
 
