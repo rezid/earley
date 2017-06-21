@@ -91,29 +91,54 @@ bool parse_grammar_file()
 	// Split the symboles of the buffer
 	string buf;
 	stringstream ss(buffer);
-	vector<string> v;
+	vector<string> vv;
 	while (ss >> buf) {
-		v.push_back("");
+		vv.push_back("");
 		for (int i = 0; i < buf.size(); ++i) {
 			char c = buf[i];
 			if (c == ':' || c == ';' || c == '|') {
 				if (i != 0)
-					v.push_back("");
-				v.back() += c;
-				v.push_back("");
+					vv.push_back("");
+				vv.back() += c;
+				vv.push_back("");
 			}
 			else
-				v.back() += c;
+				vv.back() += c;
 		}
 	}
 
 	// remove empty string from vector
-	v.erase(std::remove(v.begin(), v.end(), ""), v.end());
+	vv.erase(std::remove(vv.begin(), vv.end(), ""), vv.end());
 
-	// if v is empty then we want to parse the empty string
-	if (v.size() == 0)
-		v.push_back("");
-	
+	// if v is empty then error
+	if (vv.size() == 0) {
+		last_error = "parse_grammar_file : empty grammar file.";
+		return false;
+	}
+
+	// read terminal symbole
+	if (vv[0] != "%token") {
+		last_error = "parse_grammar_file : the file must begin with %token x y z;";
+		return false;
+	}
+
+	int i;
+	for (i = 1; vv[i] != ";"; i++) {
+		if (vv[i] == "|" || vv[i] == ":") {
+			last_error = "parse_grammar_file : the file must begin with %token x y z;";
+			return false;
+		}
+		grammar.add_terminal_symbole_if_not_present(vv[i]);
+	}
+
+	vector<string> v(vv.begin() + i + 1, vv.end());
+
+	if (i == 1) {
+		last_error = "parse_grammar_file : the file must begin with %token x y z;";
+		return false;
+	}
+
+	// rule parsing
 	int selector = 0; // 0 : start_symbole,		1 : ':',		 2 : body,		 3 : '|'	4 : ';'
 	Rule rule;
 	int status;
@@ -196,6 +221,7 @@ bool parse_grammar_file()
 
 	// FOR DEBUG ONLY : comment it after work finish
 	grammar.print_rule_list();
+
 	return true;
 }
 
