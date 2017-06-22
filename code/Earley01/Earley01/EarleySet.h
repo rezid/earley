@@ -1,7 +1,7 @@
 #pragma once
 
 #include "EarleyItem.h"
-#include <vector>
+#include <list>
 #include <string>
 
 class EarleyTable;
@@ -9,14 +9,14 @@ class EarleyTable;
 class EarleySet
 {
 private:
-	std::vector<EarleyItem> set;
+	std::list<EarleyItem> set;
 	
 	int index;
 	EarleyTable& earley_table;
 
-	void magical_prediction(EarleyItem current_item);
+	void magical_prediction(EarleyItem& current_item);
 	void prediction(EarleyItem current_item);
-	void completion(EarleyItem current_item);
+	void completion(EarleyItem& current_item);
 
 public:
 	EarleySet* precedent_set;
@@ -24,9 +24,11 @@ public:
 
 	void set_precedent_set(EarleySet* precedent_set);
 
-	void add_item_if_not_present(EarleyItem item);
+	std::list<EarleyItem>& get_set();
 
-	EarleyItem get_item(int i);
+	void add_item_if_not_present(EarleyItem& item);
+
+	EarleyItem& front();
 
 	int size();
 

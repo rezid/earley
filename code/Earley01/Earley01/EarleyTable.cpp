@@ -29,8 +29,6 @@ void EarleyTable::compute_earley_table()
 		}
 	}
 
-
-
 	// Populate the reste of E(i)
 	for (int i = 0; i < table.size(); ++i) {
 		if (i != 0)
@@ -61,14 +59,14 @@ void EarleyTable::print_table()
 
 bool EarleyTable::status()
 {
-	string start_symbole = table[0].get_item(0).get_rule()->get_main_symbole();
+	string start_symbole = table[0].front().get_rule()->get_main_symbole();
 	int size = table.back().size();
-	for (int i = 0; i < size; ++i)
-		if (table.back().get_item(i).get_rule()->get_main_symbole() == start_symbole
+	for (EarleyItem item : table.back().get_set())
+		if (item.get_rule()->get_main_symbole() == start_symbole
 			&&
-			table.back().get_item(i).get_position() == table.back().get_item(i).get_rule()->get_body().size()
+			item.get_position() == item.get_rule()->get_body().size()
 			&&
-			table.back().get_item(i).get_item_start() == 0)
+			item.get_item_start() == 0)
 			return true;
 
 	return false;

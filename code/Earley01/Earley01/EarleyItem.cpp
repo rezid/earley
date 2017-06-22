@@ -32,6 +32,15 @@ std::string EarleyItem::precedent_symbole()
 
 void EarleyItem::print_item()
 {
+	rule_ptr->print_Earley_rule(position, item_start); 
+	cout << endl;
+	reduction_ptr_list.print_ptr_list("reduction");
+	predecessor_ptr_list.print_ptr_list("predecessor");
+	cout << endl;
+}
+
+void EarleyItem::print_item_without_pointer()
+{
 	rule_ptr->print_Earley_rule(position, item_start);
 }
 

@@ -23,6 +23,7 @@ public:
 	std::string next_symbole();
 	std::string precedent_symbole();
 	void print_item();
+	void print_item_without_pointer();
 	bool operator== (const EarleyItem& item) const;
 	EarleyItem* next_item(bool is_from_magical_reduction = false);
 	int get_item_start();

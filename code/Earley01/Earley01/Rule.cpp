@@ -42,7 +42,7 @@ void Rule::print_Earley_rule(int position, int item_start)
 
 	if (!dot_insered)
 		cout << ". ";
-	cout << "(" << item_start << ")" << endl;
+	cout << "(" << item_start << ")";
 }
 
 string Rule::get_main_symbole()
