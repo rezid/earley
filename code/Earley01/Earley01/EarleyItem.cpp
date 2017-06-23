@@ -100,6 +100,31 @@ bool EarleyItem::is_symbole_before_position_is_null()
 	return symbole_before_position_is_null;
 }
 
+bool EarleyItem::is_symbole_before_two_position_is_null()
+{
+	if (position >= 2)
+		return false;
+	return true;
+}
+
+std::string EarleyItem::get_alpha_prim()
+{
+	string s = "";
+	for (int i = 0; i <= position - 2; ++i)
+		s += (rule_ptr->get_body())[i];
+
+	return s;
+}
+
+std::string EarleyItem::get_beta()
+{
+	string s = "";
+	for (int i = position; i < rule_ptr->get_body().size(); ++i)
+		s += (rule_ptr->get_body())[i];
+
+	return s;
+}
+
 bool EarleyItem::is_symbole_before_position_is_not_null()
 {
 	return !is_symbole_before_position_is_null();
@@ -122,5 +147,27 @@ void EarleyItem::set_from_magical_reduction(bool from_magical_reduction)
 {
 	this->from_magical_reduction = from_magical_reduction;
 }
+
+void EarleyItem::set_processed(bool b)
+{
+	processed = b;
+}
+
+bool EarleyItem::is_processed()
+{
+	return processed;
+}
+
+bool EarleyItem::is_not_processed()
+{
+	return !processed;
+}
+
+void EarleyItem::mark_as_processed()
+{
+	set_processed(true);
+}
+
+
 
 

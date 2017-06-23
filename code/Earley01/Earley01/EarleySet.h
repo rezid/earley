@@ -37,4 +37,5 @@ public:
 	void initialize();
 	void complete();
 	void resolve_magical_prediction_reduction_ptr();
+	int get_index();
 };

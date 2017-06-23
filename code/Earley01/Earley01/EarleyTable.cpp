@@ -6,6 +6,7 @@
 #include "EarleyItem.h"
 #include "Rule.h"
 
+
 using namespace std; 
 
 
@@ -57,10 +58,45 @@ void EarleyTable::print_table()
 	cout << endl;
 }
 
+Tree EarleyTable::generate_sppf_structure()
+{
+	Tree sppf{ *this };
+	sppf.parse_earley_table();
+	return sppf;
+}
+
+ItemCategory EarleyTable::get_category(EarleyItem * item)
+{
+	if (item->is_symbole_before_position_is_null()) {
+		ItemCategory category{ 1, "", "", "" };
+		return category;
+	}
+
+	else if (item->is_symbole_before_two_position_is_null()) {
+		if (get_grammar().is_terminal_symbole(item->precedent_symbole())) {
+			ItemCategory category{ 2, item->precedent_symbole(), "", "" };
+			return category;
+		}
+		else {
+			ItemCategory category{ 3, "", item->precedent_symbole(), "" };
+			return category;
+		}
+	}
+	else {
+		if (get_grammar().is_terminal_symbole(item->precedent_symbole())) {
+			ItemCategory category{ 4, item->precedent_symbole(), "", item->get_alpha_prim() };
+			return category;
+		}
+		else {
+			ItemCategory category{ 5, "", item->precedent_symbole(), item->get_alpha_prim() };
+			return category;
+		}
+	}
+}
+
 bool EarleyTable::status()
 {
 	string start_symbole = table[0].front().get_rule()->get_main_symbole();
-	int size = table.back().size();
 	for (EarleyItem item : table.back().get_set())
 		if (item.get_rule()->get_main_symbole() == start_symbole
 			&&
@@ -70,6 +106,16 @@ bool EarleyTable::status()
 			return true;
 
 	return false;
+}
+
+EarleySet & EarleyTable::front()
+{
+	return table.front();
+}
+
+EarleySet & EarleyTable::back()
+{
+	return table.back();
 }
 
 EarleySet& EarleyTable::get_set(int set_number)

@@ -1,4 +1,5 @@
 *Release*
+*Debug*
 *.vs/
 rapport/*.aux
 rapport/*.log

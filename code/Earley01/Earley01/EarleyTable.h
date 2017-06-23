@@ -1,10 +1,14 @@
 #pragma once
 
+#include "Tree.h"
 #include "Rule.h"
 #include "EarleySet.h"
 #include <vector>
 #include <string>
+#include <fstream>
 #include <iostream>
+#include "ItemCategory.h"
+
 
 using namespace std;
 
@@ -18,7 +22,6 @@ private:
 	Grammar& grammar;
 
 	void add_item_to_set_if_not_present(int set_number, EarleyItem item);
-	
 	
 	int size();
 
@@ -40,7 +43,15 @@ public:
 	void compute_earley_table();
 	bool status();
 
+	EarleySet& front();
+	EarleySet& back();
+
 	void print_table();
+
+
+	Tree generate_sppf_structure();
+
+	ItemCategory get_category(EarleyItem* item);
 
 	
 };

@@ -38,3 +38,8 @@ void EarleyItemPtrList::print_ptr_list(string name)
 
 	cout << endl;
 }
+
+std::list<EarleyItemPtr>& EarleyItemPtrList::get_list()
+{
+	return list;
+}

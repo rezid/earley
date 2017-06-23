@@ -135,6 +135,11 @@ void EarleySet::resolve_magical_prediction_reduction_ptr()
 		}	
 }
 
+int EarleySet::get_index()
+{
+	return index;
+}
+
 void EarleySet::prediction(EarleyItem current_item)
 {
 	for (Rule& r : earley_table.get_grammar().get_rule_list()) {

@@ -1,9 +1,9 @@
 #include<iostream>
-#include <iostream>
-#include <fstream>
+//#include <fstream>
 #include<string>
 #include <regex>
 #include "Grammar.h"
+#include "Tree.h"
 #include<sstream>
 #include<vector>
 
@@ -38,10 +38,21 @@ int main(int argc, char* argv[])
 	}
 
 	//// Test if input string recognized or not
-	//if (table->status())
-	//	cout << "\nSUCCESS !!!!!!!!\n" << endl;
-	//else
-	//	cout << "\nFAIL !!!!!!!!\n" << endl;
+	if (table_ptr->status()) {
+		// create SPPF Representation
+		Tree sppf = table_ptr->generate_sppf_structure();
+		// print the representation
+		sppf.print_tree_in_dot_format(ast_file);
+		// Closing the files
+		ast_file.close();
+		// Execute dot commande
+		system("dot -Tpdf ast.txt -o ast.pdf");
+		// open image
+		system("ast.pdf");
+	}
+		
+	else
+		cout << "\nFAIL !!!!!!!!\n" << endl;
 
 	// Closing the files
 	ast_file.close();
@@ -163,7 +174,7 @@ bool parse_grammar_file()
 			break;
 		case 1:
 			if (v[i] != ":") {
-				last_error = "parse_grammar_file : Format File Error (0003)";
+				last_error = "parse_grammar_file : Format File Error (0003) : " + to_string(i);
 				return false;
 			}
 			selector = 2;

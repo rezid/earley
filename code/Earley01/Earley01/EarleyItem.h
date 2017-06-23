@@ -4,6 +4,7 @@
 #include "EarleyItemPtrList.h"
 #include "EarleyItemPtr.h"
 
+
 class Rule;
 
 // Exemple of an Earley item : S : •S + F (2)
@@ -17,6 +18,7 @@ private:
 	EarleyItemPtrList predecessor_ptr_list;
 	bool symbole_before_position_is_null;
 	bool from_magical_reduction;
+	bool processed = false; // For buil_tree implementation
 	
 public:
 	EarleyItem(Rule* rule_ptr, int position, int item_start, bool is_from_magical_reduction = false);
@@ -34,10 +36,22 @@ public:
 	EarleyItemPtrList& get_reduction_ptr_list();
 	EarleyItemPtrList& get_predecessor_ptr_list();
 	bool is_symbole_before_position_is_null();
+	
 	bool is_symbole_before_position_is_not_null();
 	bool is_complete();
 	bool is_from_magical_reduction();
 	void set_from_magical_reduction(bool from_magical_reduction);
+
+	void set_processed(bool b);
+	bool is_processed();
+	bool is_not_processed();
+	void mark_as_processed();
+	bool is_symbole_before_two_position_is_null();
+	std::string get_alpha_prim();
+	std::string get_beta();
+	
+
+
 };
 
  
