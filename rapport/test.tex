@@ -406,8 +406,39 @@ Il s'avère qu'il existe un meilleur algorithme pour ce problème, avec une comp
 
 \chapter{Le programme}
 Dans cette section, je vais mettre tout ce qui a un rapport avec le programme que j'ai développer. A savoir, comment l'utiliser, le diagramme de classe et les différente dépendance de notre programme.
-\section{L'utilisation}
+\section{Utiliser le programme}
+Le projet se trouve sur Github\footnote{https://github.com/rezid/earley}. C'est le dossier "code" qui contient le code source du programme.
 
+Pour compiler le programme, il suffit de faire:
+\begin{lstlisting}
+$ git clone ¤https://github.com/rezid/earley.git¤
+$ cd earley
+$ cd code
+$ make
+\end{lstlisting}
+
+Cela compilera le programme et créera l'exécutable \lstinline|bin/app.out|.
+
+Pour exécuter le programme, on a besoin de deux fichiers. Le premier qui contient la définition de la grammaire, il faut faire attention a bien séparer les symboles par des espaces:
+\begin{lstlisting}
+S : S S
+| b ;
+\end{lstlisting}
+et le deuxième fichier contient le mot a analyser séparé par des espace:
+\begin{lstlisting}
+b b b
+\end{lstlisting}
+
+il suffit d'exécuter la commande suivante:
+\begin{lstlisting}
+$ .bin/app.out grammar.txt string.txt
+\end{lstlisting}
+
+Pour ensuite que le graphe SPPF de ce mot s'affiche s'il existe, sinon un message s'affiche pour dire que le mot n'appartient pas a la grammaire.
+
+On fais remarquer aussi que, dans le fichier de la grammaire, on ne déclare pas les symboles terminaux. En effet, ils sont déduit directement du mot a reconnaitre.
+
+\section{Diagramme De Classe}
 \bibliographystyle {plain}
 \bibliography{mabiblio}  
 \end{document}
