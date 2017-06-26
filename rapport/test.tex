@@ -309,9 +309,9 @@ On ajoute un pointeur de réduction nommé $k$ de $p$ a $t$
 
 Si $\tau \neq \epsilon$, On ajoute un pointeur de décalage nommé aussi $k$ de $p$ a $q$.
 
-\section{L'Algorithme d'analyse syntaxique}
-
-Voici l'algorithme qui permet de construire la représentation SPPF a partir de la table Earley modifié:
+\section{L'Algorithme de construction de la représentation SPPF}
+Scott\cite{Scott} avait proposer un algorithme récursive pour passé de la table d'Earley décoré avec des pointeurs a la représentation SPPF, mais après un test, il s'avère qu'il comportait une erreur, qu'on a corrigé
+Voici la version corrigé :
 \begin{lstlisting}[frame=single]
 Buildtree(u, p) 
 {
@@ -320,9 +320,7 @@ Buildtree(u, p)
 	mark ¤$p$¤ as processed
 	
 	if ¤$p =(A ::= •,j)$¤ {
-		if there is no SPPF node ¤$v$¤ labelled ¤$(A, i, i)$¤
-		create one with child node ¤$\epsilon$¤
-		if ¤$u$¤ does not have a family ¤$(v)$¤ then add the family ¤$(v)$¤ to ¤$u$¤ }
+		if ¤$u$¤ does not have a child node ¤$\epsilon$¤ then add a child node ¤$\epsilon$¤ to ¤$u$¤ }
 		
 	if ¤$p =(A ::= \alpha • \beta, j)$¤ (where ¤$a$¤ is a terminal) {
 		if there is no SPPF node ¤$v$¤ labelled ¤$(a, i − 1,i)$¤ create one
@@ -348,7 +346,7 @@ Buildtree(u, p)
 			suppose that the pointer is labelled ¤$l$¤ and points to ¤$q$¤
 			if there is no SPPF node ¤$v$¤ labelled ¤$(C, l, i)$¤ create one
 			if ¤$q$¤ is not marked as processed ¤$Buildtree(v,q)$¤
-			if there is no SPPF node ¤$w$¤ labelled ¤$(A ::= \alpha'x • C \beta, j, l)$¤ create one 
+			if there is no SPPF node ¤$w$¤ labelled ¤$(A ::= \alpha' • C \beta, j, l)$¤ create one 
 			for each target ¤$p'$¤ of a predecessor pointer labelled ¤$l$¤ from ¤$p$¤ {
 				if ¤$p'$¤ is not marked as processed ¤$Buildtree(w,p')$¤ }
 			if ¤$u$¤ does not have a family ¤$(w, v)$¤ add the family ¤$(w, v)$¤ to ¤$u$¤ }}
