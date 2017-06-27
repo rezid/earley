@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
 	}
 		
 	else
-		cout << "\nFAIL !!!!!!!!\n" << endl;
+		cout << "\nPARSE FAIL : word does not belong to the grammar \n" << endl;
 
 	// Closing the files
 	ast_file.close();
