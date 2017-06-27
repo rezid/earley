@@ -86,7 +86,7 @@ void Node::print_tree_in_dot_format(ostream & dot_file, int i)
 	mark();
 
 	for (auto& family : families) {
-		if (families.size() == 2) {
+		if (families.size() >= 2) {
 			string s = std::to_string(++i);
 			dot_file << "\"" << s << "\"[shape=circle,width=.1,style=filled,label=\"\"];" << "\n";
 			dot_file << "\"" << name() << "\"" << " -> " << "\"" << s << "\";" << "\n";

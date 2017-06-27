@@ -82,11 +82,10 @@ void EarleySet::initialize()
 		EarleyItem* new_item = nullptr;
 		if (item.get_position() != item.get_rule()->get_body().size())
 			if (earley_table.get_grammar().is_terminal_symbole(item.next_symbole())) {
-				if (item.next_symbole() == item.get_rule()->get_body().at(item.get_position()))
+				//cout << item.next_symbole() << " " << item.get_position() << " " << earley_table.get_input_symbol(item.get_position()) << endl;
+				if (item.next_symbole() == earley_table.get_input_symbol(precedent_set->get_index()))
 					new_item = item.next_item(false);
 			}
-			else
-				new_item = item.next_item(false);
 
 			
 		if (new_item != nullptr) {
