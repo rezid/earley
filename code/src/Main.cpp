@@ -142,12 +142,8 @@ bool parse_grammar_file()
 			// return 1 : encounter'|' with empty body
 			// return 2 : normale case
 			status = rule.push_back_symbole_to_body(v[i]);
-			if (status == 0)
+			if (status == 0 || status == 1)
 				grammar.add_nullable_symbole_if_not_present(rule.get_main_symbole());
-			else if (status == 1) {
-				last_error = "parse_grammar_file : Format File Error (0005)";
-				return false;
-			}
 				
 			if (v[i] == "|") {
 				i--;
