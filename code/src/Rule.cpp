@@ -42,7 +42,7 @@ void Rule::print_Earley_rule(int position, int item_start)
 
 	if (!dot_insered)
 		cout << ". ";
-	cout << "(" << item_start << ")" << endl;
+	cout << "(" << item_start << ")";
 }
 
 string Rule::get_main_symbole()
@@ -72,7 +72,7 @@ void Rule::set_body(std::vector<std::string> body)
 	this->body = body;
 }
 
-std::vector<std::string> Rule::get_body()
+std::vector<std::string>& Rule::get_body()
 {
 	return body;
 }
@@ -114,6 +114,11 @@ bool Rule::operator==(const Rule& rule) const
 		return true;
 
 	return false;
+}
+
+int Rule::size()
+{
+	return body.size();
 }
 
 

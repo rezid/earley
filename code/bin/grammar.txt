@@ -1,4 +1,12 @@
-A :
-  | B;
+%token a b;
 
-B : A;
+S : A T
+  | a T;
+
+A : a
+  | B A;
+
+B : ;
+
+T : b b b;
+

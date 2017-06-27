@@ -1,9 +1,9 @@
 #include<iostream>
-#include <iostream>
-#include <fstream>
+//#include <fstream>
 #include<string>
 #include <regex>
 #include "Grammar.hpp"
+#include "Tree.hpp"
 #include<sstream>
 #include<vector>
 
@@ -14,35 +14,48 @@ bool parse_grammar_file();
 bool create_earley_table();
 
 string last_error;
+ofstream ast_file;
 ifstream grammar_file, string_file;
 Grammar grammar;
 vector<string> input;
-EarleyTable table;
+EarleyTable* table_ptr;
 
 int main(int argc, char* argv[])
 {
 	if (!parse_commande_line_arguments(argc, argv)) {
 		cout << last_error << endl;
-		return 0;
+		return 1;
 	}
 
 	if (!parse_grammar_file()) {
 		cout << last_error << endl;
-		return 0;
+		return 2;
 	}
 
 	if (!create_earley_table()) {
 		cout << last_error << endl;
-		return 0;
+		return 3;
 	}
 
-	// Test if input string recognized or not
-	if (table.status())
-		cout << "\nSUCCESS !!!!!!!!\n" << endl;
+	//// Test if input string recognized or not
+	if (table_ptr->status()) {
+		// create SPPF Representation
+		Tree sppf = table_ptr->generate_sppf_structure();
+		// print the representation
+		sppf.print_tree_in_dot_format(ast_file);
+		// Closing the files
+		ast_file.close();
+		// Execute dot commande
+		system("dot -Tpdf ast.txt -o ast.pdf");
+		// open image
+		system("gnome-open ast.pdf");
+	}
+		
 	else
 		cout << "\nFAIL !!!!!!!!\n" << endl;
 
 	// Closing the files
+	ast_file.close();
 	grammar_file.close();
 	string_file.close();
 	return 0;
@@ -52,13 +65,19 @@ bool parse_commande_line_arguments(int argc, char* argv[])
 {
 	// The number of arguments should be 2
 	if (argc != 3) {
-		last_error = "parse_commande_line_arguments : number of argument should be 2";
-		return false;
+		// Open the files
+		grammar_file.open("grammar.txt");
+		string_file.open("string.txt");
+		ast_file.open("ast.txt", ios::trunc);
+	}
+	else {
+		// Open the files
+		grammar_file.open(argv[1]);
+		string_file.open(argv[2]);
+		ast_file.open("ast.txt", ios::trunc);
 	}
 
-	// Open the files
-	grammar_file.open(argv[1]);
-	string_file.open(argv[2]);
+	
 
 	// Test if the file are opened
 	if (!grammar_file.is_open()) {
@@ -71,6 +90,10 @@ bool parse_commande_line_arguments(int argc, char* argv[])
 		return false;
 	}
 
+	if (!ast_file.is_open()) {
+		last_error = "parse_commande_line_arguments : can't open ast_file";
+		return false;
+	}
 	return true;
 }
 
@@ -84,29 +107,54 @@ bool parse_grammar_file()
 	// Split the symboles of the buffer
 	string buf;
 	stringstream ss(buffer);
-	vector<string> v;
+	vector<string> vv;
 	while (ss >> buf) {
-		v.push_back("");
+		vv.push_back("");
 		for (int i = 0; i < buf.size(); ++i) {
 			char c = buf[i];
 			if (c == ':' || c == ';' || c == '|') {
 				if (i != 0)
-					v.push_back("");
-				v.back() += c;
-				v.push_back("");
+					vv.push_back("");
+				vv.back() += c;
+				vv.push_back("");
 			}
 			else
-				v.back() += c;
+				vv.back() += c;
 		}
 	}
 
 	// remove empty string from vector
-	v.erase(std::remove(v.begin(), v.end(), ""), v.end());
+	vv.erase(std::remove(vv.begin(), vv.end(), ""), vv.end());
 
-	// if v is empty then we want to parse the empty string
-	if (v.size() == 0)
-		v.push_back("");
-	
+	// if v is empty then error
+	if (vv.size() == 0) {
+		last_error = "parse_grammar_file : empty grammar file.";
+		return false;
+	}
+
+	// read terminal symbole
+	if (vv[0] != "%token") {
+		last_error = "parse_grammar_file : the file must begin with %token x y z;";
+		return false;
+	}
+
+	int i;
+	for (i = 1; vv[i] != ";"; i++) {
+		if (vv[i] == "|" || vv[i] == ":") {
+			last_error = "parse_grammar_file : the file must begin with %token x y z;";
+			return false;
+		}
+		grammar.add_terminal_symbole_if_not_present(vv[i]);
+	}
+
+	vector<string> v(vv.begin() + i + 1, vv.end());
+
+	if (i == 1) {
+		last_error = "parse_grammar_file : the file must begin with %token x y z;";
+		return false;
+	}
+
+	// rule parsing
 	int selector = 0; // 0 : start_symbole,		1 : ':',		 2 : body,		 3 : '|'	4 : ';'
 	Rule rule;
 	int status;
@@ -126,7 +174,7 @@ bool parse_grammar_file()
 			break;
 		case 1:
 			if (v[i] != ":") {
-				last_error = "parse_grammar_file : Format File Error (0003)";
+				last_error = "parse_grammar_file : Format File Error (0003) : " + to_string(i);
 				return false;
 			}
 			selector = 2;
@@ -142,8 +190,12 @@ bool parse_grammar_file()
 			// return 1 : encounter'|' with empty body
 			// return 2 : normale case
 			status = rule.push_back_symbole_to_body(v[i]);
-			if (status == 0 || status == 1)
+			if (status == 0)
 				grammar.add_nullable_symbole_if_not_present(rule.get_main_symbole());
+			else if (status == 1) {
+				last_error = "parse_grammar_file : Format File Error (0005)";
+				return false;
+			}
 				
 			if (v[i] == "|") {
 				i--;
@@ -178,13 +230,14 @@ bool parse_grammar_file()
 	}
 
 	// Complete the nullable symbole list
-	grammar.get_all_nullable_symboles();
+	grammar.compute_nullable_symbole_list();
 
 	// FOR DEBUG ONLY : comment it after work finish
-	grammar.print_nullable_symboles();
+	grammar.print_nullable_symbole_list();
 
 	// FOR DEBUG ONLY : comment it after work finish
-	grammar.print_all_rules();
+	grammar.print_rule_list();
+
 	return true;
 }
 
@@ -203,13 +256,13 @@ bool create_earley_table()
 		v.push_back(buf);
 
 	// Parse the buffer and in an earley table
-	table = grammar.parse_string(v);
+	table_ptr = grammar.create_earley_table_from_input(v);
 
 	// FOR DEBUG ONLY : comment it after work finish
-	grammar.print_terminal_symboles();
+	grammar.print_terminal_symbole_list();
 
 	// FOR DEBUG ONLY : comment it after work finish
-	table.print_table();
+	table_ptr->print_table();
 
 	return true;
 }

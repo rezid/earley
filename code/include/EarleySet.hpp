@@ -1,19 +1,41 @@
 #pragma once
 
 #include "EarleyItem.hpp"
-#include <vector>
+#include <list>
+#include <string>
+
+class EarleyTable;
 
 class EarleySet
 {
 private:
-	std::vector<EarleyItem> set;
+	std::list<EarleyItem> set;
+	
+	int index;
+	EarleyTable* earley_table;
+
+	void magical_prediction(EarleyItem& current_item);
+	void prediction(EarleyItem current_item);
+	void completion(EarleyItem& current_item);
 
 public:
-	EarleySet();
-	void add_item_if_not_present(EarleyItem item);
-	void print_set();
-	
-	int size();
-	EarleyItem& get_item(int i);
-};
+	EarleySet* precedent_set;
+	EarleySet(EarleySet* precedent_set, EarleyTable* earley_table);
 
+	void set_precedent_set(EarleySet* precedent_set);
+
+	std::list<EarleyItem>& get_set();
+
+	void add_item_if_not_present(EarleyItem& item);
+
+	EarleyItem& front();
+
+	int size();
+
+	void print_set();
+
+	void initialize();
+	void complete();
+	void resolve_magical_prediction_reduction_ptr();
+	int get_index();
+};

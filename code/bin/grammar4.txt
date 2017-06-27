@@ -1,0 +1,18 @@
+%token a b;
+
+S : A B
+  | C D;
+
+A : a;
+
+B : a;
+ 
+
+C : E;
+
+D : E;
+
+E : b;
+
+
+

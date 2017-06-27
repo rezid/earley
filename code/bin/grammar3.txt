@@ -1,0 +1,35 @@
+%token the a this he she book boys girl with in takes take;
+
+S : NP VP;
+S : Aux NP VP;
+S : VP;
+
+NP : PRON;
+NP : Det Nom;
+
+Nom : N;
+Nom : Nom N;
+Nom : Nom PP;
+
+PP : PRP NP;
+
+VP : V;
+VP : V NP;
+VP : VP PP;
+
+Det : the;
+Det : a;
+Det : this;
+
+PRON : he;
+PRON : she;
+
+N : book;
+N : boys;
+N : girl;
+
+PRP : with;
+PRP : in;
+
+V : takes;
+V : take;
