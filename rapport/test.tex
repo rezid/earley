@@ -78,9 +78,13 @@
    	  \Large\textbf{Algorithme Earley 2016/2017}\\
       \Large\textbf{Rapport}\\
       \large\textit{Abderrazak ZIDANE\footnote{zidane.rezzak@gmail.com}}
+      
+      \Large\textbf{Encadrant: Régis-Gianas}\\
    \end{center}
    \vspace*{\stretch{2.0}}
 \end{titlepage}
+
+\tableofcontents
 
 \chapter{Introduction}
 Durant mon parcours d'étudiant en informatique, j'ai tout d'abord découvert les compilateurs, puis j'ai appris à les aimer, et aujourd'hui je suis amené à les construire et à les développer. Ce projet est une grande opportunité pour moi d'agrandir mes acquis et connaissances, et de comprendre les aspects théorique et logiciels tout en faisant ce à quoi j'aspire. De plus, les problèmes rencontrés durant ce travail, mon appris à faire de la recherche et à lire de la documentation et thèse.
@@ -97,12 +101,14 @@ Dans leurs versions de base, l'algorithme CYK et Earley sont des reconnaisseurs 
 
 Par contre Elizabeth Scott\cite{Scott}, a crée deux algorithme d'analyse syntaxique basé sur Earley, ayant une complexité cubique dans le pire des cas.
 
-Nous allons tout d'abord comprendre les méthodes d'Elizabeth Scott, est proposer une application écrite en C++ qui implémente ces méthode la.
+Nous allons tout d'abord comprendre le raisonnement utilisé par d'Elizabeth Scott pour construire ces algorithmes, trouver les erreurs de ces algorithmes, et les corriger. On proposera ensuite une application écrite en C++ qui implémente ces algorithmes.
 
 \chapter{Du Reconnaisseur a l'Analyseur syntaxique}
-In y a pas d'analyseur ou reconnaisseur syntaxique de complexité linéaire qui peut être utilisé a toute les grammaire non contextuelle. Dans sa forme reconnaisseur syntaxique, l'algorithme CYK est de complexité cubique pour des grammaire en forme normale de Chomsky. Le reconnaisseur Earley, lui aussi a une complexité cubique pour toute grammaire non contextuelle, et a même, une complexité n2 pour une grammaire non-ambigüe. Le reconnaisseur Earley est dit générale, puisque il reconnais toute la catégorie grammaire non-contextuelle, même ceux qui sont ambiguë.
+In y a pas d'analyseur ou reconnaisseur syntaxique de complexité linéaire qui peut être utilisé a toute les grammaire non contextuelle. Dans sa forme reconnaisseur syntaxique, l'algorithme CYK est de complexité cubique pour des grammaire en forme normale de Chomsky. Le reconnaisseur Earley, lui aussi a une complexité cubique pour toute grammaire non contextuelle, et a même, une complexité $n^2$ pour une grammaire non-ambigüe. Le reconnaisseur Earley est dit générale, puisque il reconnais toute la catégorie grammaire non-contextuelle, même ceux qui sont ambiguë.
 
 Étendre un reconnaisseur pour qu'il soit un analyseur syntaxique n'ai pas chose évidente, et soulève plusieurs problème, en plus, on peut avoir beaucoup ou infiniment de dérivation pour un mot donné, un reconnaisseur de complexité cubique peut vite devenir un analyseur de complexité infinie.
+
+Dans cette section, nous allons tout d'abord rependre au question courante qu'un lecteur peut se poser, ces repenses sont tirées des articles de Scott\cite{Scott}.
 
 \section{Se débarrasser des grammaires Ambigüe ? Bonne idée ?}
 On peut se dire que des grammaires ambigües reflètent des sémantiques ambigües, et donc, ne doivent pas être utilisé en pratique. Se sera une positon beaucoup trop extrême a tenir, puisque par exemple c'est très connue que l'expression 'if-else' dans La version ANSI du language C est ambigüe, mais en attachons le 'else' au plus récent 'if' on arrive a avoir une complexité linéaire et a se débarrasser de l'ambiguïté.
@@ -706,8 +712,8 @@ Cette classe représente un item, elle comporte toute les constituantes de cette
 \includegraphics[width=6cm]{ast1.pdf}
 \includegraphics[width=6cm]{ast2.pdf}
 \includegraphics[width=6cm]{ast3.pdf}
-\includegraphics[width=6cm]{ast4.pdf}
-\includegraphics[width=6cm]{ast5.pdf}
+\includegraphics[width=8cm]{ast4.pdf}
+\includegraphics[width=5cm]{ast5.pdf}
 
 \bibliographystyle {plain}
 \bibliography{mabiblio}  
