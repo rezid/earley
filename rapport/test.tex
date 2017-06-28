@@ -409,7 +409,14 @@ Dans cette section, je vais mettre tout ce qui a un rapport avec le programme qu
 \section{Utiliser le programme}
 Le projet se trouve sur Github\footnote{https://github.com/rezid/earley}. C'est le dossier "code" qui contient le code source du programme.
 
-Pour compiler le programme, il suffit de faire:
+Pour compiler le programme, il faut d'abord installer les dépendances :
+\begin{lstlisting}
+$ sudo apt-get update
+$ sudo apt-get install graphviz
+\end{lstlisting}
+
+Ensuite :
+
 \begin{lstlisting}
 $ git clone ¤https://github.com/rezid/earley.git¤
 $ cd earley
@@ -421,12 +428,22 @@ Cela compilera le programme et créera l'exécutable \lstinline|bin/app.out|.
 
 Pour exécuter le programme, on a besoin de deux fichiers. Le premier qui contient la définition de la grammaire, il faut faire attention a bien séparer les symboles par des espaces:
 \begin{lstlisting}
-S : S S
-| b ;
+%token ¤the a this he she book boys girl with in takes take¤;
+
+S : NP VP | Aux NP VP | VP;
+NP : PRON | Det Nom;
+Nom : N | Nom N | Nom PP;
+PP : PRP NP;
+VP : V  | V NP | VP PP;
+Det : ¤the¤ | ¤a¤ | ¤this¤;
+PRON : ¤he¤ | ¤she¤;
+N : ¤book¤ | ¤boys¤ | ¤girl¤;
+PRP : ¤with¤ | ¤in¤;
+V : ¤takes¤ | ¤take¤;
 \end{lstlisting}
 et le deuxième fichier contient le mot a analyser séparé par des espace:
 \begin{lstlisting}
-b b b
+¤take this book¤
 \end{lstlisting}
 
 il suffit d'exécuter la commande suivante:
@@ -434,11 +451,264 @@ il suffit d'exécuter la commande suivante:
 $ .bin/app.out grammar.txt string.txt
 \end{lstlisting}
 
-Pour ensuite que le graphe SPPF de ce mot s'affiche s'il existe, sinon un message s'affiche pour dire que le mot n'appartient pas a la grammaire.
+Deux cas peuvent se produire. Sois le mot n'ai pas reconnu est dans ce cas le message suivant s'affiche sur la console:
+\begin{lstlisting}
+PARSE FAIL : word does not belong to the grammar 
+\end{lstlisting}
 
-On fais remarquer aussi que, dans le fichier de la grammaire, on ne déclare pas les symboles terminaux. En effet, ils sont déduit directement du mot a reconnaitre.
+Sois le mot est reconnu par la grammaire et dans ce cas la, le PDF contenant le graphe SPPF du mot s'affiche.
+
+Voici un diagramme de classe comportent uniquement les noms des classes utilisés et leurs relations.
 
 \section{Diagramme De Classe}
+Voici un diagramme de classe comportent uniquement les noms des classes utilisés et leurs relations, le lecteur doit connaitre la différence entre une agrégation et une composition pour lire correctement le diagramme.
+
+\begin{tikzpicture}
+\begin{class}[text  width=2cm]{Grammar}{3,0}
+\end{class}
+
+\begin{class}[text  width=2cm]{Rule}{8,0}
+\end{class}
+
+\begin{class}[text  width=2cm]{EarleyTable}{0,-3}
+\end{class}
+
+\begin{class}[text  width=2cm]{EarleySet}{8,-3}
+\end{class}
+
+\begin{class}[text  width=2cm]{EarleyItem}{15,-3}
+\end{class}
+
+\begin{class}[text  width=3cm]{EarleyItemPtr}{3,-6}
+\end{class}
+
+\begin{class}[text  width=3cm]{EarleyItemPtrList}{9,-6}
+\end{class}
+
+\begin{class}[text  width=2cm]{ItemCategory}{14,-6}
+\end{class}
+
+\begin{class}[text  width=2cm]{Tree}{0,-9}
+\end{class}
+
+\begin{class}[text  width=2cm]{Node}{7,-9}
+\end{class}
+
+\composition{Grammar}{ rule\_list }{1..*}{Rule}
+\aggregation{EarleyTable}{ grammar }{1}{Grammar}
+\composition{EarleyTable}{ table }{1..*}{EarleySet}
+\composition{EarleySet}{ set }{1..*}{EarleyItem}
+\aggregation{EarleyItem}{ rule\_ptr }{1}{Rule}
+\composition{EarleyItem}{ reduction\_ptr\_list predecessor\_ptr\_list }{2}{EarleyItemPtrList}
+\composition{EarleyItemPtrList}{ list }{1..*}{EarleyItemPtr}
+\aggregation{EarleyItemPtr}{ item\_ptr }{1}{EarleyItem}
+\aggregation{Tree}{ table }{1}{EarleyTable}
+\composition{Tree}{ node\_list epsilon }{1..*}{Node}
+\unidirectionalAssociation{EarleyItem}{}{1}{ItemCategory}
+\end{tikzpicture}
+
+Pour pas encombrer le diagramme voici la suite:
+
+\begin{tikzpicture}
+\begin{class}[text  width=2cm]{EarleyTable}{0,0}
+\end{class}
+
+\begin{class}[text  width=2cm]{EarleySet}{7,0}
+\end{class}
+
+
+\begin{class}[text  width=2cm]{Node1}{0,-2}
+\end{class}
+
+\begin{class}[text  width=2cm]{Node2}{7,-2}
+\end{class}
+
+\aggregation{EarleySet}{ earley\_table }{1}{EarleyTable}
+\aggregation{Node1}{ families }{1}{Node2}
+\end{tikzpicture}
+
+remarque que Node1 et Node2 référent a la même classe: Node
+
+\section{La Classe Grammar}
+\begin{tikzpicture}
+\begin{class}[text  width=9cm]{Grammar}{0,0}
+
+\attribute {start\_symbole : string }
+\attribute {terminal\_symbole\_list : list\_of\_string }
+\attribute {rule\_list : list\_of\_rule }
+\attribute {nullable\_symbole\_list : list\_of\_string }
+
+\operation {Grammar ( )}
+\operation {set\_start\_symbole (string)}
+\operation {set\_terminal\_symbole\_list (list\_of\_string)}
+\operation {add\_rule\_if\_not\_present (rule)}
+\operation {add\_terminal\_symbole\_if\_not\_present (string)}
+\operation {add\_nullable\_symbole\_if\_not\_present (string)}
+\operation {get\_rule\_list ( )}
+\operation {get\_start\_symbole ( )}
+\operation {print\_terminal\_symbole\_list ( )}
+\operation {print\_rule\_list ( )}
+\operation {print\_nullable\_symbole\_list ( )}
+\operation {is\_terminal\_symbole (string)}
+\operation {is\_not\_terminal\_symbole (string)}
+\operation {is\_nullable\_symbole (string)}
+\operation {compute\_nullable\_symbole\_list( )}
+\operation {create\_earley\_table\_from\_input(reference of string\_list)}
+\end{class}
+\end{tikzpicture}
+
+Cette classe représente une grammaire, elle comporte toute les constituantes de cette derniers, a savoir: 
+\begin{itemize}
+	\item Les symbole terminaux
+	\item Les règles
+	\item Le symbole de départ
+\end{itemize}
+On a ajouté dans cette classe la liste des symboles annulables.
+
+
+\section{La Classe Rule}
+\begin{tikzpicture}
+\begin{class}[text  width=6cm]{Rule}{0,0}
+
+\attribute {main\_symbole : string }
+\attribute {body : list\_of\_string }
+\attribute {main\_symbole\_is\_set : boolean }
+
+\operation {Rule ( )}
+\operation {Rule (string, list\_of\_string)}
+\operation {print\_rule (string)}
+\operation {print\_Earley\_rule (integer, integer)}
+\operation {get\_main\_symbole ( )}
+\operation {get\_symbole (integer)}
+\operation {set\_main\_symbole (string)}
+\operation {set\_body (list\_of\_string)}
+\operation {get\_body ( )}
+\operation {push\_back\_symbole\_to\_body (string)}
+\operation {clear\_rule ( )}
+\operation {clear\_body ( )}
+\operation {operator== (reference to rule)}
+\operation {size ( )}
+\end{class}
+\end{tikzpicture}
+
+Cette classe représente une règle de production, elle comporte toute les constituantes de cette derniers, a savoir: 
+\begin{itemize}
+	\item Le symbole de départ (la partie gauche de la règle).
+	\item Le body de la règle (la partie droite de la règle).
+\end{itemize}
+
+\section{La Classe EarleyTable}
+\begin{tikzpicture}
+\begin{class}[text  width=8cm]{EarleyTable}{0,0}
+
+\attribute {table : list\_of\_EarleySet }
+\attribute {input\_symbole\_list : list\_of\_string }
+\attribute {grammar : reference to Grammar }
+
+\operation {EarleyTable (Grammar, reference to list\_of\_string)}
+\operation {add\_item\_to\_set\_if\_not\_present (int, EarleyItem)}
+\operation {size ( )}
+\operation {get\_input\_symbol (integer)}
+\operation {get\_grammar ( )}
+\operation {get\_set (integer)}
+\operation {compute\_earley\_table ()}
+\operation {front ()}
+\operation {back ( )}
+\operation {print\_table ()}
+\operation {generate\_sppf\_structure ( )}
+\operation {get\_category (reference to EarleyItem)}
+\end{class}
+\end{tikzpicture}
+
+Cette classe représente la table d'Earley, elle est constitué de plusieurs ensemble d'Earley (EarleySet), on trouve aussi dans cette classe le mot a reconnaitre, puisque chaque table d'Earley correspond a un mot donné. On garde aussi une référence vert la grammaire utilisé pour calculer la table.
+
+\section{La Classe EarleySet}
+\begin{tikzpicture}
+\begin{class}[text  width=9cm]{EarleySet}{0,0}
+
+\attribute {set : list\_of\_EarleyItem }
+\attribute {index : integer }
+\attribute {earley\_table : reference to EarleyTable }
+\attribute {precedent\_set : reference to EarleySet }
+
+\operation {EarleySet (reference to EarleySet, reference to EarleyTable)}
+\operation {magical\_prediction (reference to EarleyItem)}
+\operation {prediction (EarleyItem)}
+\operation {completion (reference to EarleyItem)}
+\operation {set\_precedent\_set (reference to EarleySet)}
+\operation {get\_set ( )}
+\operation {add\_item\_if\_not\_present (reference to EarleyItem)}
+\operation {front ()}
+\operation {size ( )}
+\operation {print\_set ()}
+\operation {initialize ( )}
+\operation {complete ( )}
+\operation {resolve\_magical\_prediction\_reduction\_ptr ( )}
+\operation {get\_index ( )}
+\end{class}
+\end{tikzpicture}
+
+Cette classe représente une ensemble d'Earley, elle est constitué de plusieurs item (EarleyItem), chaque ensemble garde en mémoire une référence vers le précédent ensemble forment ainsi une liste chainé. Chaque ensemble possède aussi un index (Pour $E_0$ l'index c'est $0$). On garde aussi une référence vers la table d'Earley ou appartient l'ensemble, histoire de pouvoir remonter vers la table si besoin.
+
+\section{La Classe EarleyItem}
+\begin{tikzpicture}
+\begin{class}[text  width=9cm]{EarleyItem}{0,0}
+
+\attribute {rule\_ptr : reference to Rule }
+\attribute {position : integer }
+\attribute {item\_start : integer }
+\attribute {reduction\_ptr\_list : EarleyItemPtrList }
+\attribute {predecessor\_ptr\_list : EarleyItemPtrList }
+\attribute {symbole\_before\_position\_is\_null : boolean }
+\attribute {from\_magical\_reduction : boolean }
+\attribute {processed : boolean }
+
+\operation {EarleyItem (reference to Rule, integer, integer, boolean)}
+\operation {next\_symbole ( )}
+\operation {precedent\_symbole ( )}
+\operation {print\_item ( )}
+\operation {print\_item\_without\_pointer ( )}
+\operation {operator== (reference to EarleyItem)}
+\operation {next\_item (boolean)}
+\operation {get\_item\_start ()}
+\operation {get\_position ()}
+\operation {get\_rule ()}
+\operation {add\_reduction\_ptr (EarleyItemPtr)}
+\operation {add\_predecessor\_ptr (EarleyItemPtr)}
+\operation {get\_reduction\_ptr\_list( )}
+\operation {get\_predecessor\_ptr\_list( )}
+\operation {is\_symbole\_before\_position\_is\_null ( )}
+\operation {is\_symbole\_before\_position\_is\_not\_null ()}
+\operation {is\_complete ( )}
+\operation {is\_from\_magical\_reduction ()}
+\operation {set\_from\_magical\_reduction (boolean)}
+\operation {set\_processed (boolean)}
+\operation {is\_processed ( )}
+\operation {is\_not\_processed ( )}
+\operation {mark\_as\_processed ( )}
+\operation {is\_symbole\_before\_two\_position\_is\_null ( )}
+\operation {get\_alpha\_prim ( )}
+\operation {get\_beta ( )}
+\end{class}
+\end{tikzpicture}
+
+Cette classe représente un item, elle comporte toute les constituantes de cette derniers, a savoir: 
+\begin{itemize}
+	\item La règle de production utilisé 
+	\item La position du point
+	\item le numéro entre parenthèse
+	\item les pointeurs de réduction
+	\item les pointeur de décalage
+\end{itemize}
+
+\chapter{ANNEXE A: Quelque images produite par le programme}
+
+\includegraphics[width=6cm]{ast1.pdf}
+\includegraphics[width=6cm]{ast2.pdf}
+\includegraphics[width=6cm]{ast3.pdf}
+\includegraphics[width=6cm]{ast4.pdf}
+\includegraphics[width=6cm]{ast5.pdf}
+
 \bibliographystyle {plain}
 \bibliography{mabiblio}  
 \end{document}
